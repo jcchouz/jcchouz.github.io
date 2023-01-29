@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-jc.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-jc.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-jc.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="afEpI_YO5XMj3IO7ubSC6HOsJU5UrcmSHYEwDKHy5NY">
+  <meta name="msvalidate.01" content="5FEE17552B5887C0B4C54AADCB770619">
+  <meta name="baidu-site-verification" content="code-QH9hjgRxms">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.jacenfool.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.7.1","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":true,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":true,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeIn","post_body":"fadeIn","coll_header":"fadeIn","sidebar":"fadeIn"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="参考网址  https:&#x2F;&#x2F;blog.csdn.net&#x2F;bd_ai_iot&#x2F;article&#x2F;details&#x2F;78287379   下载hadoop-eclipse插件hadoop-eclipse-plugin-2.7.3.jar  下载地址： http:&#x2F;&#x2F;www.pc6.com&#x2F;softview&#x2F;SoftView_452492.html  拷贝hadoop-2.7.7和hbas">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BigData-3-使用Eclipse连接HBase（Windows）">
+<meta property="og:url" content="https://www.jacenfool.com/2018/11/29/BigData-3-%E4%BD%BF%E7%94%A8Eclipse%E8%BF%9E%E6%8E%A5HBase%EF%BC%88Windows%EF%BC%89/index.html">
+<meta property="og:site_name" content="佳城的博客">
+<meta property="og:description" content="参考网址  https:&#x2F;&#x2F;blog.csdn.net&#x2F;bd_ai_iot&#x2F;article&#x2F;details&#x2F;78287379   下载hadoop-eclipse插件hadoop-eclipse-plugin-2.7.3.jar  下载地址： http:&#x2F;&#x2F;www.pc6.com&#x2F;softview&#x2F;SoftView_452492.html  拷贝hadoop-2.7.7和hbas">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2018/11/29/5bffa97cb29b9.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00b79a42846.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00b9897415d.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00ba2225eac.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00baf9ce221.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00bb556cc3e.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00bb898e176.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00bbd12323b.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00bc22334c2.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00bc96b7d2b.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00bcc705edc.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00bcf2acc5b.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00bd794796c.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00bdfe1f8df.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00be229e980.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00be68ebf62.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00bf68477ec.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00bf9fce41f.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00c00fee779.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00c0dea5e70.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00c11a51246.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00c27053dcc.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00c2bf30e83.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/30/5c00c311be0f3.jpg">
+<meta property="article:published_time" content="2018-11-29T06:08:47.000Z">
+<meta property="article:modified_time" content="2021-09-30T08:56:51.072Z">
+<meta property="article:author" content="Jacen Chou">
+<meta property="article:tag" content="BigData（大数据）">
+<meta property="article:tag" content="HBase">
+<meta property="article:tag" content="Eclipse">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2018/11/29/5bffa97cb29b9.jpg">
+
+
+<link rel="canonical" href="https://www.jacenfool.com/2018/11/29/BigData-3-%E4%BD%BF%E7%94%A8Eclipse%E8%BF%9E%E6%8E%A5HBase%EF%BC%88Windows%EF%BC%89/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.jacenfool.com/2018/11/29/BigData-3-%E4%BD%BF%E7%94%A8Eclipse%E8%BF%9E%E6%8E%A5HBase%EF%BC%88Windows%EF%BC%89/","path":"2018/11/29/BigData-3-使用Eclipse连接HBase（Windows）/","title":"BigData-3-使用Eclipse连接HBase（Windows）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>BigData-3-使用Eclipse连接HBase（Windows） | 佳城的博客</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-208623307-1"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"UA-208623307-1","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?54b6944972ac94d7084d367b28e685fas"></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">佳城的博客</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于我</a></li>
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-book-open fa-fw"></i>文章概览</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-angle-double-down fa-fw"></i>时间线</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E7%BD%91%E5%9D%80"><span class="nav-number">1.</span> <span class="nav-text">参考网址</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BDhadoop-eclipse%E6%8F%92%E4%BB%B6hadoop-eclipse-plugin-2.7.3.jar"><span class="nav-number">2.</span> <span class="nav-text">下载hadoop-eclipse插件hadoop-eclipse-plugin-2.7.3.jar</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8B%B7%E8%B4%9Dhadoop-2.7.7%E5%92%8Chbase-1.4.8%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">3.</span> <span class="nav-text">拷贝hadoop-2.7.7和hbase-1.4.8文件夹</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEhosts"><span class="nav-number">4.</span> <span class="nav-text">配置hosts</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8B%B7%E8%B4%9Dwinutils.exe%E6%96%87%E4%BB%B6"><span class="nav-number">5.</span> <span class="nav-text">拷贝winutils.exe文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8eclipse%E4%B8%AD%E8%AE%BE%E7%BD%AEhadoop%E7%9A%84%E6%A0%B9%E7%9B%AE%E5%BD%95"><span class="nav-number">6.</span> <span class="nav-text">在Eclipse中设置hadoop的根目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E6%8F%92%E4%BB%B6%E6%98%BE%E7%A4%BA%E5%92%8C%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%B7%BB%E5%8A%A0"><span class="nav-number">7.</span> <span class="nav-text">设置插件显示和远程服务器添加</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BB%BA%E5%B7%A5%E7%A8%8B%E5%86%99%E4%BB%A3%E7%A0%81%E6%B5%8B%E8%AF%95"><span class="nav-number">8.</span> <span class="nav-text">建工程，写代码测试</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jacen Chou"
+      src="/images/avatar3.jpg">
+  <p class="site-author-name" itemprop="name">Jacen Chou</p>
+  <div class="site-description" itemprop="description">Stay Hungry. Stay Foolish.</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Jacen-Chou" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Jacen-Chou" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:774845313@qq.com" title="E-Mail → mailto:774845313@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/Jacen-Chou" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.jacenfool.com/2018/11/29/BigData-3-%E4%BD%BF%E7%94%A8Eclipse%E8%BF%9E%E6%8E%A5HBase%EF%BC%88Windows%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar3.jpg">
+      <meta itemprop="name" content="Jacen Chou">
+      <meta itemprop="description" content="Stay Hungry. Stay Foolish.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="佳城的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          BigData-3-使用Eclipse连接HBase（Windows）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-11-29 14:08:47" itemprop="dateCreated datePublished" datetime="2018-11-29T14:08:47+08:00">2018-11-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/BigData%EF%BC%88%E5%A4%A7%E6%95%B0%E6%8D%AE%EF%BC%89/" itemprop="url" rel="index"><span itemprop="name">BigData（大数据）</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/BigData%EF%BC%88%E5%A4%A7%E6%95%B0%E6%8D%AE%EF%BC%89/HBase/" itemprop="url" rel="index"><span itemprop="name">HBase</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Eclipse/" itemprop="url" rel="index"><span itemprop="name">Eclipse</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h4 id="参考网址">参考网址</h4>
+<blockquote>
+<p>https://blog.csdn.net/bd_ai_iot/article/details/78287379</p>
+</blockquote>
+<hr />
+<h4 id="下载hadoop-eclipse插件hadoop-eclipse-plugin-2.7.3.jar">下载hadoop-eclipse插件<code>hadoop-eclipse-plugin-2.7.3.jar</code></h4>
+<blockquote>
+<p>下载地址： http://www.pc6.com/softview/SoftView_452492.html</p>
+</blockquote>
+<h4 id="拷贝hadoop-2.7.7和hbase-1.4.8文件夹">拷贝hadoop-2.7.7和hbase-1.4.8文件夹</h4>
+<ol type="1">
+<li><p><code>docker cp 62f1:/opt/hadoop-2.7.7 /home1/jupyter_data/ZJC/hadoop-2.7.7</code></p></li>
+<li><p><code>docker cp 62f1:/opt/hbase-1.4.8 /home1/jupyter_data/ZJC/hbase-1.4.8</code></p></li>
+<li><p>用WinSCP把两个文件夹考到Windows上 <span id="more"></span> #### 配置环境变量 按照Windows配置环境变量的方法（右击我的电脑---&gt;属性---&gt;高级系统设置---&gt;高级里的环境变量），进行配置</p></li>
+<li><p>增加<code>HADOOP_HOME</code>和<code>HBASE_HOME</code> <img data-src="https://i.loli.net/2018/11/29/5bffa97cb29b9.jpg" /></p></li>
+<li><p>在Path中增加<code>E:\hadoop-2.7.7</code> <img data-src="https://i.loli.net/2018/11/30/5c00b79a42846.jpg" /></p></li>
+</ol>
+<h4 id="配置hosts">配置hosts</h4>
+<ol type="1">
+<li>用记事本打开<code>C:\Windows\System32\drivers\etc\hosts</code></li>
+<li>确保<code>127.0.0.1       localhost</code>被注释</li>
+<li>在最后加入<code>202.204.62.145 62f169f8d9d1</code></li>
+<li>保存</li>
+</ol>
+<h4 id="拷贝winutils.exe文件">拷贝winutils.exe文件</h4>
+<ol type="1">
+<li>下载winutils.exe文件 &gt; 下载地址：<br />
+&gt; http://www.pc6.com/softview/SoftView_578664.html<br />
+&gt; 选择<code>hadoop-2.7.1\bin\</code>里的winutils.exe文件</li>
+<li>将<code>winutils.exe</code>文件拷贝到<code>E:\hadoop-2.7.7\bin</code></li>
+</ol>
+<h4 id="在eclipse中设置hadoop的根目录">在Eclipse中设置hadoop的根目录</h4>
+<ol type="1">
+<li>打开Eclipse，选中Window的Preference<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00b9897415d.jpg" /></li>
+<li>点击左侧的<code>Hadoop Map/Reduce</code>，设置Hadoop的根目录为<code>E:\hadoop-2.7.7</code><br />
+<img data-src="https://i.loli.net/2018/11/30/5c00ba2225eac.jpg" /></li>
+</ol>
+<h4 id="设置插件显示和远程服务器添加">设置插件显示和远程服务器添加</h4>
+<ol type="1">
+<li>按图示操作<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00baf9ce221.jpg" /></li>
+<li>按图示操作<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bb556cc3e.jpg" /></li>
+<li>按图示操作（我这边已经添加了）<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bb898e176.jpg" /></li>
+<li>按图示参数配置<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bbd12323b.jpg" /></li>
+<li>点击'Finsh'，未报错则连接成功，可在左边看到'DFS locations'<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bc22334c2.jpg" /></li>
+<li>配置完成</li>
+</ol>
+<h4 id="建工程写代码测试">建工程，写代码测试</h4>
+<ol type="1">
+<li><p>按图示操作<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bc96b7d2b.jpg" /></p></li>
+<li><p>按图示操作<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bcc705edc.jpg" /></p></li>
+<li><p>按图示操作<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bcf2acc5b.jpg" /></p></li>
+<li><p>按图示操作<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bd794796c.jpg" /></p></li>
+<li><p>导入<code>E:\hbase-1.4.8\lib</code>目录下的所有jar包<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bdfe1f8df.jpg" /> <img data-src="https://i.loli.net/2018/11/30/5c00be229e980.jpg" /> <img data-src="https://i.loli.net/2018/11/30/5c00be68ebf62.jpg" /> 选中所有jar包，点击'打开'<br />
+点击'OK'</p></li>
+<li><p>在src目录下创建一个文件，文件名为 <code>log4j.properties</code><br />
+注意在Map/Reduce下没法创建，解决办法：切换到Java模式<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bf68477ec.jpg" /></p>
+<p>点击'Java'</p>
+<p>右键<code>src</code>，照图示操作<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bf9fce41f.jpg" /><br />
+<img data-src="https://i.loli.net/2018/11/30/5c00c00fee779.jpg" /></p>
+<p>输入内容：</p>
+<p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># Root Logger</span><br><span class="line">log4j.rootLogger=DEBUG,console,file</span><br><span class="line">log4j.appender.console=org.apache.log4j.ConsoleAppender</span><br><span class="line">log4j.appender.console.layout=org.apache.log4j.PatternLayout</span><br><span class="line">log4j.appender.console.layout.ConversionPattern=%5p [%t] - %m%n</span><br><span class="line">log4j.appender.file=org.apache.log4j.DailyRollingFileAppender</span><br><span class="line">log4j.appender.file.File=log.html</span><br><span class="line">log4j.appender.file.layout=org.apache.log4j.HTMLLayout</span><br></pre></td></tr></table></figure></p>
+<p>保存</p></li>
+<li><p>新建class，写测试代码 <img data-src="https://i.loli.net/2018/11/30/5c00c0dea5e70.jpg" /> <img data-src="https://i.loli.net/2018/11/30/5c00c11a51246.jpg" /></p></li>
+</ol>
+<p>写简单的建表代码： <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line">package com.hbase.test;</span><br><span class="line"></span><br><span class="line">import java.io.IOException;</span><br><span class="line"></span><br><span class="line">import org.apache.commons.logging.Log;</span><br><span class="line">import org.apache.commons.logging.LogFactory;</span><br><span class="line">import org.apache.hadoop.conf.Configuration;</span><br><span class="line">import org.apache.hadoop.hbase.Cell;</span><br><span class="line">import org.apache.hadoop.hbase.CellUtil;</span><br><span class="line">import org.apache.hadoop.hbase.HBaseConfiguration;</span><br><span class="line">import org.apache.hadoop.hbase.HColumnDescriptor;</span><br><span class="line">import org.apache.hadoop.hbase.HTableDescriptor;</span><br><span class="line">import org.apache.hadoop.hbase.TableName;</span><br><span class="line">import org.apache.hadoop.hbase.client.Admin;</span><br><span class="line">import org.apache.hadoop.hbase.client.Connection;</span><br><span class="line">import org.apache.hadoop.hbase.client.ConnectionFactory;</span><br><span class="line">import org.apache.hadoop.hbase.client.Get;</span><br><span class="line">import org.apache.hadoop.hbase.client.HBaseAdmin;</span><br><span class="line">import org.apache.hadoop.hbase.client.HTable;</span><br><span class="line">import org.apache.hadoop.hbase.client.Put;</span><br><span class="line">import org.apache.hadoop.hbase.client.Result;</span><br><span class="line">import org.apache.hadoop.hbase.util.Bytes;</span><br><span class="line">import org.junit.Test;</span><br><span class="line"></span><br><span class="line">public class HbaseTest &#123;</span><br><span class="line">    public static Log log=LogFactory.getLog(HbaseInsert1.class);</span><br><span class="line">    public static String al_TableName=&quot;employees&quot;;//表名</span><br><span class="line">    public static String columnFamily=&quot;student_name&quot;;//列族</span><br><span class="line">    public static String rowFamily=&quot;h2&quot;;//行键</span><br><span class="line">    static Configuration conf=null;</span><br><span class="line">    </span><br><span class="line">    static&#123;</span><br><span class="line">        conf = HBaseConfiguration.create();</span><br><span class="line">        conf.set(&quot;hbase.zookeeper.quorum&quot;, &quot;62f169f8d9d1&quot;);// 使用eclipse时必须添加这个，否则无法定位master需要配置hosts</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public static void main(String[] args) throws IOException &#123;</span><br><span class="line">    	testCreateTable();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    /**</span><br><span class="line">     * 创建表</span><br><span class="line">     * HBaseAdmin </span><br><span class="line">     * HTableDescriptor</span><br><span class="line">     */</span><br><span class="line">    @Test</span><br><span class="line">    public static void testCreateTable()&#123;</span><br><span class="line">        </span><br><span class="line">        HBaseAdmin admin=null;</span><br><span class="line">        HTableDescriptor htd=null;</span><br><span class="line">        try &#123;</span><br><span class="line">             admin=new HBaseAdmin(conf);</span><br><span class="line">            //判断要创建的表是否已经存在</span><br><span class="line">            if(admin.tableExists(al_TableName))&#123;</span><br><span class="line">                System.out.println(al_TableName+&quot;表已经存在&quot;);</span><br><span class="line">                return;</span><br><span class="line">            &#125;else&#123;</span><br><span class="line">                htd=new HTableDescriptor(al_TableName.getBytes());    </span><br><span class="line">                //设置列族</span><br><span class="line">                htd.addFamily(new HColumnDescriptor(columnFamily));</span><br><span class="line">                admin.createTable(htd);</span><br><span class="line">                System.out.println(al_TableName+&quot;表创建成功！！！&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    /**</span><br><span class="line">     * 删除表</span><br><span class="line">     */</span><br><span class="line">    @Test</span><br><span class="line">    public static void testDeletTable()&#123;</span><br><span class="line">        HBaseAdmin admin=null;</span><br><span class="line">        try &#123;</span><br><span class="line">            admin=new HBaseAdmin(conf);</span><br><span class="line">            if(admin.tableExists(al_TableName))&#123;</span><br><span class="line">                System.out.println(&quot;table is exits&quot;);</span><br><span class="line">                //如果表存在，则注为失效状态</span><br><span class="line">                admin.disableTable(al_TableName);//删除表</span><br><span class="line">                admin.deleteTable(al_TableName);</span><br><span class="line">                System.out.println(&quot;删除成功&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ol start="8" type="1">
+<li>测试代码</li>
+</ol>
+<p>运行：<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00c27053dcc.jpg" /></p>
+<p>查看Console：<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00c2bf30e83.jpg" /> 测试成功！</p>
+<p>访问网址：http://202.204.62.145:16010/<br />
+也可以看到出现了名字是'employees'的表 <img data-src="https://i.loli.net/2018/11/30/5c00c311be0f3.jpg" /></p>
+
+    </div>
+
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2018\11\28\BigData-2-HBase下载、安装、配置\" rel="bookmark">BigData-2-HBase下载、安装、配置</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2018\12\27\BigData-4-HBase-Thrift下载、安装、配置（用于Python操作HBase）\" rel="bookmark">BigData-4-HBase-Thrift下载、安装、配置（用于Python操作HBase）</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2018\12\03\BigData-6-HBase可视化工具Phoenix安装和Squirrel安装\" rel="bookmark">BigData-6-HBase可视化工具Phoenix安装和Squirrel安装</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2018\11\30\BigData-新建HBase容器要做的事\" rel="bookmark">BigData-新建HBase容器要做的事</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="\2018\11\30\利用ImportTsv将csv文件导入到HBase\" rel="bookmark">利用ImportTsv将csv文件导入到HBase</a></div>
+    </li>
+  </ul>
+
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>希望本文对你有所帮助，感谢认可~</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Jacen Chou 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Jacen Chou
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.jacenfool.com/2018/11/29/BigData-3-%E4%BD%BF%E7%94%A8Eclipse%E8%BF%9E%E6%8E%A5HBase%EF%BC%88Windows%EF%BC%89/" title="BigData-3-使用Eclipse连接HBase（Windows）">https://www.jacenfool.com/2018/11/29/BigData-3-使用Eclipse连接HBase（Windows）/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/BigData%EF%BC%88%E5%A4%A7%E6%95%B0%E6%8D%AE%EF%BC%89/" rel="tag"># BigData（大数据）</a>
+              <a href="/tags/HBase/" rel="tag"># HBase</a>
+              <a href="/tags/Eclipse/" rel="tag"># Eclipse</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/11/30/Git%E5%91%BD%E4%BB%A4/" rel="prev" title="Git命令">
+                  <i class="fa fa-chevron-left"></i> Git命令
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/11/29/WinSCP%E4%BD%BF%E7%94%A8root%E7%94%A8%E6%88%B7%E8%BF%9E%E6%8E%A5%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="next" title="WinSCP使用root用户连接服务器">
+                  WinSCP使用root用户连接服务器 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+  <div class="languages">
+    <label class="lang-select-label">
+      <i class="fa fa-language"></i>
+      <span>简体中文</span>
+      <i class="fa fa-angle-up" aria-hidden="true"></i>
+    </label>
+    <select class="lang-select" data-canonical="" aria-label="选择语言">
+      
+        <option value="zh-CN" data-href="/2018/11/29/BigData-3-%E4%BD%BF%E7%94%A8Eclipse%E8%BF%9E%E6%8E%A5HBase%EF%BC%88Windows%EF%BC%89/" selected="">
+          简体中文
+        </option>
+      
+        <option value="en" data-href="/en/2018/11/29/BigData-3-%E4%BD%BF%E7%94%A8Eclipse%E8%BF%9E%E6%8E%A5HBase%EF%BC%88Windows%EF%BC%89/" selected="">
+          English
+        </option>
+      
+    </select>
+  </div>
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fas fa-spinner"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jacen Chou</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script size="300" alpha="0.4" zIndex="-1" src="https://cdn.jsdelivr.net/npm/ribbon.js@1.0.2/dist/ribbon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lozad@1.16.0/dist/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"ams","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

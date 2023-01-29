@@ -1,0 +1,2263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>BigData-1-Hadoop下载、安装、伪分布式配置</title>
+    <url>/2018/11/27/BigData-1-Hadoop%E4%B8%8B%E8%BD%BD%E3%80%81%E5%AE%89%E8%A3%85%E3%80%81%E4%BC%AA%E5%88%86%E5%B8%83%E5%BC%8F%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<p>首先145服务器有：带java的ubuntu镜像</p>
+<h4 id="创建容器">1 创建容器</h4>
+<p><code>docker run -itd -p 50070:50070 -p 8088:8088 ubuntu:java</code></p>
+<h4 id="进入容器">2 进入容器</h4>
+<p><code>docker exec -it 333a /bin/bash</code></p>
+<h4 id="配置etchosts文件">3 配置/etc/hosts文件</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cat&gt;&gt;/etc/hosts&lt;&lt;EOF  </span><br><span class="line">#Hadoop Name Node  </span><br><span class="line">172.17.0.3  hadoop1  </span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<p>设置开机自动配置</p>
+<ul>
+<li>切换到root用户<code>su root</code>，输入密码</li>
+<li><code>vi ~/.bashrc</code></li>
+<li>在最后加上 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cat&gt;&gt;/etc/hosts&lt;&lt;EOF  </span><br><span class="line">#Hadoop Name Node  </span><br><span class="line">172.17.0.3  hadoop1  </span><br><span class="line">EOF</span><br></pre></td></tr></table></figure></li>
+<li>执行一下.bashrc文件 <code>source ~/.bashrc</code></li>
+</ul>
+<h4 id="设置root密码">4 设置root密码</h4>
+<p><code>passwd root</code></p>
+<p>*<strong>密码：root</strong></p>
+<h4 id="创建hadoop用户并设置密码">5 创建hadoop用户，并设置密码</h4>
+<p><code>useradd -m hadoop</code></p>
+<p><code>passwd hadoop</code></p>
+<p>密码：<code>hadoop123</code></p>
+<p>*删除用户<code>userdel -r hadoop</code></p>
+<h4 id="ubuntu查看用户列表">6 ubuntu查看用户列表</h4>
+<p><code>cat /etc/passwd</code></p>
+<h4 id="创建hadoop安装目录">7 创建HADOOP安装目录</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mkdir /opt/hadoop-2.7.7</span><br><span class="line">chown -R hadoop.hadoop /opt/hadoop-2.7.7</span><br><span class="line">ln -s /opt/hadoop-2.7.7 /opt/hadoop</span><br><span class="line">chown -R hadoop.hadoop /opt/hadoop</span><br></pre></td></tr></table></figure>
+<h4 id="为hadoop用户设置shell限制">8 为hadoop用户设置shell限制</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cat&gt;&gt;/etc/security/limits.conf&lt;&lt;EOF</span><br><span class="line">hadoop soft nproc 2047</span><br><span class="line">hadoop hard nproc 16384</span><br><span class="line">hadoop soft nofile 1024</span><br><span class="line">hadoop hard nofile 65536</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cat&gt;&gt;/etc/pam.d/login&lt;&lt;EOF</span><br><span class="line">session    required     pam_limits.so</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<h4 id="配置hadoop用户的环境文件">9 配置Hadoop用户的环境文件</h4>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cat &gt; ~hadoop/.bashrc &lt;&lt;EOF</span><br><span class="line"># .bashrc</span><br><span class="line"></span><br><span class="line"># Source global definitions</span><br><span class="line">if [ -f /etc/bashrc ]; then</span><br><span class="line">        . /etc/bashrc</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"># User specific aliases and functions</span><br><span class="line"></span><br><span class="line">JAVA_HOME=/usr/lib/jvm/java-8-oracle</span><br><span class="line">export JAVA_HOME</span><br><span class="line"></span><br><span class="line">HADOOP_HOME=/opt/hadoop</span><br><span class="line">export HADOOP_HOME</span><br><span class="line"></span><br><span class="line">HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop</span><br><span class="line">export HADOOP_CONF_DIR</span><br><span class="line"></span><br><span class="line">export SPARK_HOME=/opt/spark</span><br><span class="line"></span><br><span class="line">PATH=\$HADOOP_HOME/bin:\$HADOOP_HOME/sbin:\$SPARK_HOME/bin:\$SPARK_HOME/sbin:\$JAVA_HOME/bin:\$PATH</span><br><span class="line">export PATH</span><br><span class="line"></span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<h4 id="安装hadoop2.7.7软件">10 安装Hadoop2.7.7软件</h4>
+<p>从145服务器中拷过来安装包</p>
+<p>或者下载<code>wget https://www-eu.apache.org/dist/hadoop/common/hadoop-2.7.7/hadoop-2.7.7.tar.gz</code></p>
+<p>退出容器，但不关闭<code>ctrl+P+Q</code></p>
+<p>改为root用户<code>su root</code>，输入密码</p>
+<p>拷贝安装包<code>docker cp /home1/jupyter_data/ZhouJiacheng/hadoop-2.7.7.tar.gz 333a:/opt/</code></p>
+<p>进入容器<code>docker exec -it 333a /bin/bash</code></p>
+<p>解压(-c 表示解压到指定目录)<code>tar -zxvf /opt/hadoop-2.7.7.tar.gz -C /opt/</code></p>
+<h4 id="配置ssh本机无密码登录">11 配置ssh本机无密码登录</h4>
+<ol type="1">
+<li>root用户下</li>
+</ol>
+<ul>
+<li><p>先执行<code>apt-get update</code></p></li>
+<li><p>再执行<code>apt-get install openssh-server</code></p></li>
+<li><p>开启ssh<code>service ssh start</code></p></li>
+<li><p>检测ssh是否启动<code>ps -e | grep ssh</code></p></li>
+</ul>
+<blockquote>
+<p>有sshd,说明ssh服务已经启动，如果没有启动，则输入上面的开启ssh命令</p>
+</blockquote>
+<ul>
+<li>彻底卸载ssh (--purge 指明这个包裹应该被完全清除)<code>apt-get --purge remove openssh-server</code></li>
+</ul>
+<ol start="2" type="1">
+<li>切换到<strong>hadoop用户！</strong></li>
+</ol>
+<ul>
+<li><p><code>cd</code></p></li>
+<li><p><code>ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa</code></p></li>
+<li><p><code>cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</code></p></li>
+<li><p><code>chmod 600 ~/.ssh/authorized_keys</code></p></li>
+</ul>
+<ol start="3" type="1">
+<li>以hadoop用户身份，验证本机的无密码ssh <strong>（必须执行以下验证！）</strong></li>
+</ol>
+<ul>
+<li><p><code>ssh hadoop1</code><br />
+&gt; 出现下图为正确 &gt; &gt; <img data-src="https://i.loli.net/2018/11/25/5bfa3f06cda6c.jpg" /></p></li>
+<li><p><code>ssh localhost</code> **正确结果同上*</p></li>
+<li><p><code>ssh 0.0.0.0</code> **正确结果同上*</p></li>
+<li><p><code>ssh 127.0.0.1</code> **正确结果同上*</p></li>
+</ul>
+<ol start="4" type="1">
+<li>设置ssh自动启动</li>
+</ol>
+<p>切换到root用户<code>su root</code>，输入密码</p>
+<p>vi <code>~/.bashrc</code></p>
+<p>在最后加上<code>service sshd start</code>，保存</p>
+<p>执行一下.bashrc文件 <code>source ~/.bashrc</code></p>
+<h4 id="配置单节点伪分布式pseudo-distributedhadoop环境">12 配置单节点伪分布式（Pseudo-Distributed）Hadoop环境</h4>
+<ol type="1">
+<li>配置文件/etc/hadoop/core-site.xml</li>
+</ol>
+<ul>
+<li><p><code>cd /opt/hadoop-2.7.7</code></p></li>
+<li><p><code>vi /opt/hadoop-2.7.7/etc/hadoop/core-site.xml</code></p></li>
+<li><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;hadoop.tmp.dir&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;/home/hadoop/dfs/temp&lt;/value&gt;</span><br><span class="line">        &lt;description&gt;A base for other temporary directories.&lt;/description&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;fs.defaultFS&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;hdfs://hadoop1:9000&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;io.file.buffer.size&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;131072&lt;/value&gt;</span><br><span class="line">        &lt;description&gt;io file buffer size&lt;/description&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">     &lt;property&gt;</span><br><span class="line">        &lt;name&gt;hadoop.proxyuser.hadoop.hosts&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;*&lt;/value&gt;</span><br><span class="line">     &lt;/property&gt;</span><br><span class="line">     &lt;property&gt;</span><br><span class="line">        &lt;name&gt;hadoop.proxyuser.hadoop.groups&lt;/name&gt; </span><br><span class="line">        &lt;value&gt;*&lt;/value&gt;</span><br><span class="line">     &lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="2" type="1">
+<li>配置文件etc/hadoop/hdfs-site.xml</li>
+</ol>
+<ul>
+<li><p><code>cd /opt/hadoop-2.7.7</code></p></li>
+<li><p><code>vi /opt/hadoop-2.7.7/etc/hadoop/hdfs-site.xml</code></p></li>
+<li><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.namenode.name.dir&lt;/name&gt;     </span><br><span class="line">        &lt;value&gt;file:/home/hadoop/dfs/name&lt;/value&gt;     </span><br><span class="line">    &lt;/property&gt; </span><br><span class="line">    &lt;property&gt; </span><br><span class="line">        &lt;name&gt;dfs.datanode.data.dir&lt;/name&gt;      </span><br><span class="line">        &lt;value&gt;file:/home/hadoop/dfs/data&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.replication&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;1&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.webhdfs.enabled&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;true&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.http.address&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;hadoop1:50070&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.namenode.secondary.http-address&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;hadoop1:50090&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line"></span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="3" type="1">
+<li>配置文件etc/hadoop/slaves</li>
+</ol>
+<p><code>cd /opt/hadoop-2.7.7</code></p>
+<p><code>vi /opt/hadoop-2.7.7/etc/hadoop/slaves</code></p>
+<p>增加<code>hadoop1</code></p>
+<ol start="4" type="1">
+<li>创建HDFS使用的Linux目录</li>
+</ol>
+<p>切换到hadoop用户<code>su hadoop</code></p>
+<p><code>mkdir -p /home/hadoop/dfs/name</code></p>
+<p><code>mkdir -p /home/hadoop/dfs/data</code></p>
+<p><code>mkdir -p /home/hadoop/dfs/temp</code></p>
+<blockquote>
+<p>使用 -p 参数来创建多级文件夹</p>
+</blockquote>
+<ol start="5" type="1">
+<li>格式化文件系统</li>
+</ol>
+<p><code>hdfs namenode -format</code></p>
+<ol start="6" type="1">
+<li>启动HDFS</li>
+</ol>
+<p><code>start-dfs.sh</code></p>
+<blockquote>
+<p>如果报错<code>hadoop1: Error: JAVA_HOME is not set and could not be found.</code>，那么：<br />
+1. 输入<code>java –version</code>，查看jdk是否安装成功 2. 输入<code>export</code>，查看jdk环境变量是否设置成功<img data-src="https://i.loli.net/2018/11/25/5bfa45d5a2a7d.jpg" /> 3. 在<code>/opt/hadoop/etc/hadoop/hadoop-env.sh</code>中，再显式地重新声明一遍JAVA_HOME：<br />
+将<br />
+<code>export JAVA_HOME=$JAVA_HOME</code><br />
+修改为<br />
+<code>export JAVA_HOME=/usr/lib/jvm/java-8-oracle</code></p>
+</blockquote>
+<p>再尝试开启<code>start-dfs.sh</code></p>
+<p>出现下图为正确： <img data-src="https://i.loli.net/2018/11/25/5bfa482124e9b.jpg" /></p>
+<ol start="7" type="1">
+<li>浏览NameNode的web接口</li>
+</ol>
+<p>浏览器访问 http://202.204.62.145:50070/</p>
+<p>看到界面： <img data-src="https://i.loli.net/2018/11/25/5bfa4894b40bf.jpg" /></p>
+<hr />
+<p><strong>注意以下所有测试命令都要在hadoop用户下执行！！！！！</strong></p>
+<ol start="8" type="1">
+<li>查看HDFS启动后的情况 <code>jps</code></li>
+</ol>
+<p>前面的数字是jvm的进程id，后面是jvm的类启动信息</p>
+<ol start="9" type="1">
+<li>在HDFS上创建目录</li>
+</ol>
+<p><code>hdfs dfs -mkdir /user</code></p>
+<p><code>hdfs dfs -mkdir /user/hadoop</code></p>
+<ol start="10" type="1">
+<li>测试</li>
+</ol>
+<p><code>cd /opt/hadoop-2.7.7</code></p>
+<p><code>hdfs dfs -put etc/hadoop input</code></p>
+<p><code>hadoop jar /opt/hadoop-2.7.7/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.7.jar grep input output 'dfs[a-z.]+'</code></p>
+<p><code>hdfs dfs -get output output</code></p>
+<p><code>hdfs dfs -cat output/*</code></p>
+<p>再清除测试数据</p>
+<p><code>rm -rf output</code></p>
+<p><code>hdfs dfs -rm -r /user/hadoop/input</code></p>
+<p><code>hdfs dfs -rm -r /user/hadoop/output</code></p>
+<ol start="11" type="1">
+<li>HDFS集群管理命令</li>
+</ol>
+<p>查看集群状态<code>hdfs dfsadmin -report</code></p>
+<p>查看文件块组成<code>hdfs fsck / -files -blocks</code></p>
+<ol start="12" type="1">
+<li>停止HDFS</li>
+</ol>
+<p><code>stop-dfs.sh</code></p>
+<h4 id="配置单节点上的yarn">13 配置单节点上的YARN</h4>
+<ol type="1">
+<li>配置文件/opt/hadoop-2.7.7/etc/hadoop/mapred-site.xml</li>
+</ol>
+<ul>
+<li><p><code>cd /opt/hadoop-2.7.7/etc/hadoop/</code></p></li>
+<li><p><code>cp mapred-site.xml.template mapred-site.xml</code></p></li>
+<li><p><code>vi /opt/hadoop-2.7.7/etc/hadoop/mapred-site.xml</code></p></li>
+<li><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">       &lt;name&gt;mapreduce.framework.name&lt;/name&gt;</span><br><span class="line">       &lt;value&gt;yarn&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">       &lt;name&gt;mapreduce.jobhistory.address&lt;/name&gt;</span><br><span class="line">       &lt;value&gt;hadoop1:10020&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">       &lt;name&gt;mapreduce.jobhistory.webapp.address&lt;/name&gt;</span><br><span class="line">       &lt;value&gt;hadoop1:19888&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="2" type="1">
+<li>配置文件/opt/hadoop-2.7.7/etc/hadoop/yarn-site.xml</li>
+</ol>
+<ul>
+<li><p><code>cd /opt/hadoop-2.7.7</code></p></li>
+<li><p><code>vi /opt/hadoop-2.7.7/etc/hadoop/yarn-site.xml</code></p></li>
+<li><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;yarn.nodemanager.aux-services&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;mapreduce_shuffle&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;yarn.nodemanager.auxservices.mapreduce.shuffle.class&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;org.apache.hadoop.mapred.ShuffleHandler&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;yarn.resourcemanager.scheduler.address&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;hadoop1:8030&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;yarn.resourcemanager.resource-tracker.address&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;hadoop1:8031&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;yarn.resourcemanager.address&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;hadoop1:8032&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;yarn.resourcemanager.admin.address&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;hadoop1:8033&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;yarn.resourcemanager.webapp.address&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;hadoop1:8088&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;yarn.nodemanager.vmem-pmem-ratio&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;2.5&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line"></span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="3" type="1">
+<li>启动YARN</li>
+</ol>
+<p><code>start-yarn.sh</code></p>
+<blockquote>
+<p>出现如下提示<br />
+<code>localhost: nodemanager running as process 4671. Stop it first.</code><br />
+<code>hadoop1: nodemanager running as process 4671. Stop it first.</code><br />
+的解决办法:执行<code>stop-all.sh</code><br />
+再尝试执行<code>start-yarn.sh</code></p>
+</blockquote>
+<p>启动YARN后，再启动HDFS <code>start-dfs.sh</code></p>
+<ol start="4" type="1">
+<li>查看启动后的情况</li>
+</ol>
+<p><code>jps</code></p>
+<blockquote>
+<p>结果 <img data-src="https://i.loli.net/2018/11/25/5bfa5ce96f0a1.jpg" /></p>
+</blockquote>
+<ol start="5" type="1">
+<li>浏览ResourceManager的web接口</li>
+</ol>
+<p>浏览器访问 http://202.204.62.145:8088/</p>
+<blockquote>
+<p>结果 <img data-src="https://i.loli.net/2018/11/25/5bfa5d39b3c88.jpg" /></p>
+</blockquote>
+<ol start="6" type="1">
+<li>停止YARN</li>
+</ol>
+<p><code>stop-yarn.sh</code></p>
+<h4 id="测试运行示例程序">14 测试：运行示例程序</h4>
+<ol type="1">
+<li>查看可用的实例列表</li>
+</ol>
+<p><code>cd /opt/hadoop/share/hadoop/mapreduce</code></p>
+<p><code>yarn jar ./hadoop-mapreduce-examples-2.7.7.jar</code></p>
+<ol start="2" type="1">
+<li>例子1 计算PI</li>
+</ol>
+<p>运行带有2个map和10000000个样本的pi实例</p>
+<p><code>cd /opt/hadoop/share/hadoop/mapreduce</code></p>
+<p><code>yarn jar ./hadoop-mapreduce-examples-2.7.7.jar pi  2 10000000</code></p>
+<ol start="3" type="1">
+<li>例子2 运行Terasort测试</li>
+</ol>
+<ol type="1">
+<li>运行teragen生成随机数据用于排序</li>
+</ol>
+<p><code>cd /opt/hadoop/share/hadoop/mapreduce</code></p>
+<p><code>yarn jar hadoop-mapreduce-examples-2.7.7.jar teragen 10000 /user/terasort</code></p>
+<blockquote>
+<p>10000表示10000KB=10MB</p>
+</blockquote>
+<p>注意再次进行实验(1)需要删除/user/terasort</p>
+<p><code>hdfs dfs -ls /user</code></p>
+<p><code>hdfs dfs -rm  -r  /user/terasort</code></p>
+<ol start="2" type="1">
+<li>运行terasort对数据进行排序</li>
+</ol>
+<p>创建结果目录 <code>hdfs dfs -mkdir  /user/terasortResult</code></p>
+<p><code>cd /opt/hadoop/share/hadoop/mapreduce</code></p>
+<p><code>yarn jar hadoop-mapreduce-examples-2.7.7.jar terasort \</code></p>
+<p><code>/user/terasort   /user/terasortResult</code></p>
+<ol start="3" type="1">
+<li>验证排序后的teragen</li>
+</ol>
+<p><code>cd /opt/hadoop/share/hadoop/mapreduce</code></p>
+<p><code>yarn jar hadoop-mapreduce-examples-2.7.7.jar teravalidate \</code></p>
+<p><code>/user/terasortResult /user/terasortvalidate</code></p>
+<ol start="4" type="1">
+<li>删除测试用目录</li>
+</ol>
+<p><code>hdfs dfs -rm  -r  /user/terasort</code></p>
+<p><code>hdfs dfs -rm  -r  /user/terasortResult</code></p>
+<p><code>hdfs dfs -rm  -r  /user/terasortvalidate</code></p>
+<ol start="4" type="1">
+<li>例子3 DFS IO基准测试</li>
+</ol>
+<p>在写模式下运行名为TestDFSIO的HDFS基准测试应用程序: 运行带有2个128MB文件</p>
+<p><code>cd /opt/hadoop/share/hadoop/mapreduce</code></p>
+<p><code>yarn jar hadoop-mapreduce-client-jobclient-2.7.7-tests.jar TestDFSIO \</code></p>
+<p><code>-write -nrFiles 2 -fileSize 128</code></p>
+<p>在读模式下运行TestDFSIO <code>cd /opt/hadoop/share/hadoop/mapreduce</code></p>
+<p><code>yarn jar hadoop-mapreduce-client-jobclient-2.7.7-tests.jar TestDFSIO \</code></p>
+<p><code>-read -nrFiles 2 -fileSize 128</code></p>
+<p>清理刚才的数据 <code>cd /opt/hadoop/share/hadoop/mapreduce</code></p>
+<p><code>yarn jar hadoop-mapreduce-client-jobclient-2.7.7-tests.jar TestDFSIO \</code></p>
+<p><code>-clean</code></p>
+<h4 id="制作docker镜像">15 制作docker镜像</h4>
+<ol type="1">
+<li>在容器里
+<ul>
+<li><code>stop-all.sh</code></li>
+</ul></li>
+<li>退出容器，但不关闭<code>ctrl+P+Q</code></li>
+<li>制作镜像<code>docker commit -m "hadoop install" 333a ubuntu:hadoop</code></li>
+</ol>
+]]></content>
+      <categories>
+        <category>BigData（大数据）</category>
+        <category>Hadoop</category>
+      </categories>
+      <tags>
+        <tag>BigData（大数据）</tag>
+        <tag>Hadoop</tag>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>BigData-2-HBase下载、安装、配置</title>
+    <url>/2018/11/28/BigData-2-HBase%E4%B8%8B%E8%BD%BD%E3%80%81%E5%AE%89%E8%A3%85%E3%80%81%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<h4 id="参考网址">0 参考网址</h4>
+<blockquote>
+<p>https://blog.csdn.net/bd_ai_iot/article/details/78287379</p>
+</blockquote>
+<hr />
+<h4 id="下载">1 下载</h4>
+<p><code>wget https://mirrors.tuna.tsinghua.edu.cn/apache/hbase/stable/hbase-1.4.8-bin.tar.gz</code></p>
+<blockquote>
+<p>HBase的官网是这个<code>http://www.apache.org/dyn/closer.cgi/hbase/</code></p>
+</blockquote>
+<p>退出容器，但不关闭<code>ctrl+P+Q</code></p>
+<p>改为root用户<code>su root</code>，输入密码</p>
+<p>拷贝安装包<code>docker cp 333a:/opt/hbase-1.4.8-bin.tar.gz /home1/jupyter_data/ZhouJiacheng/</code></p>
+<p>进入容器<code>docker exec -it 333a /bin/bash</code> <span id="more"></span> #### 2 解压 <code>tar -zxvf /opt/hbase-1.4.8-bin.tar.gz -C /opt</code></p>
+<h4 id="设置用户和用户组">3 设置用户和用户组</h4>
+<p><strong>以root用户执行!</strong></p>
+<p>设置hbase-1.4.8所在用户为hadoop <code>chown -R hadoop /opt/hbase-1.4.8</code></p>
+<p>设置hbase-1.4.8所在用户组为hadoop <code>chown -R hadoop:hadoop /opt/hbase-1.4.8</code></p>
+<h4 id="设置环境变量">4 设置环境变量</h4>
+<p><strong>以hadoop用户执行!</strong></p>
+<p><code>vi /home/hadoop/.bashrc</code></p>
+<p>加上: <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">HBASE_HOME=/opt/hbase-1.4.8</span><br><span class="line">export HBASE_HOME</span><br><span class="line">export HBASE_CONF_DIR=$HBASE_HOME/conf</span><br><span class="line">export HBASE_CLASS_PATH=$HBASE_CONF_DIR</span><br><span class="line">PATH=$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$SPARK_HOME/bin:$SPARK_HOME/sbin:$JAVA_HOME/bin:$HBASE_HOME/bin:$PATH</span><br></pre></td></tr></table></figure></p>
+<p>执行一下.bashrc文件 <code>source ~/.bashrc</code></p>
+<p>验证是否成功<code>hbase version</code></p>
+<p>成功则显示：<img data-src="https://i.loli.net/2018/11/28/5bfe3a98dd4fe.jpg" /></p>
+<h4 id="hbase配置hbase-env.sh">5 HBase配置——hbase-env.sh</h4>
+<p>进入hbase目录中的conf目录<code>cd $HBASE_HOME/conf/</code></p>
+<p>编辑hbase-env.sh文件<code>vi $HBASE_HOME/conf/hbase-env.sh</code></p>
+<p>修改（可以采用复制一行出来，保留原有行） + <code>export JAVA_HOME=/usr/lib/jvm/java-8-oracle/</code> + <code>export HBASE_CLASSPATH=/opt/hbase-1.4.8/conf</code> + <code>export HBASE_MANAGES_ZK=true</code>(使用HBase自带的zookeeper) + <code>export HBASE_LOG_DIR=/opt/hbase-1.4.8/logs</code></p>
+<h4 id="hbase配置hbase-site.xml">6 HBase配置——hbase-site.xml</h4>
+<p>编辑hbase-site.xml文件<code>vi $HBASE_HOME/conf/hbase-site.xml</code></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;hbase.rootdir&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;hdfs://hadoop1:9000/hbase&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.replication&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;1&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;hbase.cluster.distributed&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;true&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="开启hbase">7 开启HBase</h4>
+<p><code>start-hbase.sh</code></p>
+<blockquote>
+<p>1、启动hbase输出ignoring option PermSize=128m; support was removed in 8.0告警信息 解决办法：由于JDK使用的是jdk1.8.0_65，注释掉以下： <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Configure PermSize. Only needed in JDK7. You can safely remove it for JDK8+</span><br><span class="line">export HBASE_MASTER_OPTS=&quot;$HBASE_MASTER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m&quot;</span><br><span class="line">export HBASE_REGIONSERVER_OPTS=&quot;$HBASE_REGIONSERVER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m&quot;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<blockquote>
+<p>2、启动时输出: regionserver running as process 1258. Stop it first. 则运行<br />
+<code>stop-all.sh</code><br />
+再尝试开启</p>
+</blockquote>
+<p>查看进程<code>jps</code> <img data-src="https://i.loli.net/2018/11/28/5bfe415fad5a0.jpg" /></p>
+<p>进入HBase shell<code>hbase shell</code></p>
+<p>退出进入HBase shell<code>exit</code></p>
+<p>停止HBase<code>stop-hbase.sh</code></p>
+<p>停止regionserver<code>/opt/hbase-1.4.8/bin/hbase-daemon.sh stop regionserver RegionServer</code></p>
+<h4 id="制作docker镜像">8 制作docker镜像</h4>
+<ol type="1">
+<li>在容器里
+<ul>
+<li><code>stop-hbase.sh</code></li>
+<li><code>stop-all.sh</code></li>
+</ul></li>
+<li>退出容器，但不关闭<code>ctrl+P+Q</code></li>
+<li>制作镜像<code>docker commit -m "hbase install" 333a ubuntu:hbase</code></li>
+</ol>
+<h4 id="设置端口映射">9 设置端口映射</h4>
+<p>制作镜像</p>
+<p>再新开一个容器，增加端口16010映射</p>
+<p><code>docker run -itd -p 50070:50070 -p 8088:8088 -p 16010:16010 -p 9000:9000 -p 2181:2181 -p 16000:16000 ubuntu:hbase</code></p>
+<p>浏览器访问<code>http://202.204.62.145:16010</code></p>
+<h4 id="新开容器后要做的事">10 新开容器后要做的事</h4>
+<ol type="1">
+<li><code>su hadoop</code></li>
+<li>尝试<code>ssh hadoop1</code>，若不成功，原因可能有：
+<ol type="1">
+<li>若提示连接不了22端口，则ssh未打开，解决办法：
+<ul>
+<li>切换到root用户<code>su root</code></li>
+<li>启动ssh<code>service ssh start</code></li>
+<li>验证是否启动<code>ps -e | grep ssh</code></li>
+</ul></li>
+<li>若提示找不到hadoop1的host，解决办法： <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cat&gt;&gt;/etc/hosts&lt;&lt;EOF  </span><br><span class="line">#Hadoop Name Node  </span><br><span class="line">$当前容器ip  hadoop1  </span><br><span class="line">EOF</span><br></pre></td></tr></table></figure></li>
+</ol></li>
+<li>ssh成功后，再开启hadoop和hbase</li>
+</ol>
+]]></content>
+      <categories>
+        <category>BigData（大数据）</category>
+        <category>HBase</category>
+      </categories>
+      <tags>
+        <tag>BigData（大数据）</tag>
+        <tag>HBase</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>BigData-3-使用Eclipse连接HBase（Windows）</title>
+    <url>/2018/11/29/BigData-3-%E4%BD%BF%E7%94%A8Eclipse%E8%BF%9E%E6%8E%A5HBase%EF%BC%88Windows%EF%BC%89/</url>
+    <content><![CDATA[<h4 id="参考网址">参考网址</h4>
+<blockquote>
+<p>https://blog.csdn.net/bd_ai_iot/article/details/78287379</p>
+</blockquote>
+<hr />
+<h4 id="下载hadoop-eclipse插件hadoop-eclipse-plugin-2.7.3.jar">下载hadoop-eclipse插件<code>hadoop-eclipse-plugin-2.7.3.jar</code></h4>
+<blockquote>
+<p>下载地址： http://www.pc6.com/softview/SoftView_452492.html</p>
+</blockquote>
+<h4 id="拷贝hadoop-2.7.7和hbase-1.4.8文件夹">拷贝hadoop-2.7.7和hbase-1.4.8文件夹</h4>
+<ol type="1">
+<li><p><code>docker cp 62f1:/opt/hadoop-2.7.7 /home1/jupyter_data/ZJC/hadoop-2.7.7</code></p></li>
+<li><p><code>docker cp 62f1:/opt/hbase-1.4.8 /home1/jupyter_data/ZJC/hbase-1.4.8</code></p></li>
+<li><p>用WinSCP把两个文件夹考到Windows上 <span id="more"></span> #### 配置环境变量 按照Windows配置环境变量的方法（右击我的电脑---&gt;属性---&gt;高级系统设置---&gt;高级里的环境变量），进行配置</p></li>
+<li><p>增加<code>HADOOP_HOME</code>和<code>HBASE_HOME</code> <img data-src="https://i.loli.net/2018/11/29/5bffa97cb29b9.jpg" /></p></li>
+<li><p>在Path中增加<code>E:\hadoop-2.7.7</code> <img data-src="https://i.loli.net/2018/11/30/5c00b79a42846.jpg" /></p></li>
+</ol>
+<h4 id="配置hosts">配置hosts</h4>
+<ol type="1">
+<li>用记事本打开<code>C:\Windows\System32\drivers\etc\hosts</code></li>
+<li>确保<code>127.0.0.1       localhost</code>被注释</li>
+<li>在最后加入<code>202.204.62.145 62f169f8d9d1</code></li>
+<li>保存</li>
+</ol>
+<h4 id="拷贝winutils.exe文件">拷贝winutils.exe文件</h4>
+<ol type="1">
+<li>下载winutils.exe文件 &gt; 下载地址：<br />
+&gt; http://www.pc6.com/softview/SoftView_578664.html<br />
+&gt; 选择<code>hadoop-2.7.1\bin\</code>里的winutils.exe文件</li>
+<li>将<code>winutils.exe</code>文件拷贝到<code>E:\hadoop-2.7.7\bin</code></li>
+</ol>
+<h4 id="在eclipse中设置hadoop的根目录">在Eclipse中设置hadoop的根目录</h4>
+<ol type="1">
+<li>打开Eclipse，选中Window的Preference<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00b9897415d.jpg" /></li>
+<li>点击左侧的<code>Hadoop Map/Reduce</code>，设置Hadoop的根目录为<code>E:\hadoop-2.7.7</code><br />
+<img data-src="https://i.loli.net/2018/11/30/5c00ba2225eac.jpg" /></li>
+</ol>
+<h4 id="设置插件显示和远程服务器添加">设置插件显示和远程服务器添加</h4>
+<ol type="1">
+<li>按图示操作<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00baf9ce221.jpg" /></li>
+<li>按图示操作<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bb556cc3e.jpg" /></li>
+<li>按图示操作（我这边已经添加了）<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bb898e176.jpg" /></li>
+<li>按图示参数配置<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bbd12323b.jpg" /></li>
+<li>点击'Finsh'，未报错则连接成功，可在左边看到'DFS locations'<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bc22334c2.jpg" /></li>
+<li>配置完成</li>
+</ol>
+<h4 id="建工程写代码测试">建工程，写代码测试</h4>
+<ol type="1">
+<li><p>按图示操作<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bc96b7d2b.jpg" /></p></li>
+<li><p>按图示操作<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bcc705edc.jpg" /></p></li>
+<li><p>按图示操作<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bcf2acc5b.jpg" /></p></li>
+<li><p>按图示操作<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bd794796c.jpg" /></p></li>
+<li><p>导入<code>E:\hbase-1.4.8\lib</code>目录下的所有jar包<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bdfe1f8df.jpg" /> <img data-src="https://i.loli.net/2018/11/30/5c00be229e980.jpg" /> <img data-src="https://i.loli.net/2018/11/30/5c00be68ebf62.jpg" /> 选中所有jar包，点击'打开'<br />
+点击'OK'</p></li>
+<li><p>在src目录下创建一个文件，文件名为 <code>log4j.properties</code><br />
+注意在Map/Reduce下没法创建，解决办法：切换到Java模式<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bf68477ec.jpg" /></p>
+<p>点击'Java'</p>
+<p>右键<code>src</code>，照图示操作<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00bf9fce41f.jpg" /><br />
+<img data-src="https://i.loli.net/2018/11/30/5c00c00fee779.jpg" /></p>
+<p>输入内容：</p>
+<p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Root Logger</span><br><span class="line">log4j.rootLogger=DEBUG,console,file</span><br><span class="line">log4j.appender.console=org.apache.log4j.ConsoleAppender</span><br><span class="line">log4j.appender.console.layout=org.apache.log4j.PatternLayout</span><br><span class="line">log4j.appender.console.layout.ConversionPattern=%5p [%t] - %m%n</span><br><span class="line">log4j.appender.file=org.apache.log4j.DailyRollingFileAppender</span><br><span class="line">log4j.appender.file.File=log.html</span><br><span class="line">log4j.appender.file.layout=org.apache.log4j.HTMLLayout</span><br></pre></td></tr></table></figure></p>
+<p>保存</p></li>
+<li><p>新建class，写测试代码 <img data-src="https://i.loli.net/2018/11/30/5c00c0dea5e70.jpg" /> <img data-src="https://i.loli.net/2018/11/30/5c00c11a51246.jpg" /></p></li>
+</ol>
+<p>写简单的建表代码： <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">package com.hbase.test;</span><br><span class="line"></span><br><span class="line">import java.io.IOException;</span><br><span class="line"></span><br><span class="line">import org.apache.commons.logging.Log;</span><br><span class="line">import org.apache.commons.logging.LogFactory;</span><br><span class="line">import org.apache.hadoop.conf.Configuration;</span><br><span class="line">import org.apache.hadoop.hbase.Cell;</span><br><span class="line">import org.apache.hadoop.hbase.CellUtil;</span><br><span class="line">import org.apache.hadoop.hbase.HBaseConfiguration;</span><br><span class="line">import org.apache.hadoop.hbase.HColumnDescriptor;</span><br><span class="line">import org.apache.hadoop.hbase.HTableDescriptor;</span><br><span class="line">import org.apache.hadoop.hbase.TableName;</span><br><span class="line">import org.apache.hadoop.hbase.client.Admin;</span><br><span class="line">import org.apache.hadoop.hbase.client.Connection;</span><br><span class="line">import org.apache.hadoop.hbase.client.ConnectionFactory;</span><br><span class="line">import org.apache.hadoop.hbase.client.Get;</span><br><span class="line">import org.apache.hadoop.hbase.client.HBaseAdmin;</span><br><span class="line">import org.apache.hadoop.hbase.client.HTable;</span><br><span class="line">import org.apache.hadoop.hbase.client.Put;</span><br><span class="line">import org.apache.hadoop.hbase.client.Result;</span><br><span class="line">import org.apache.hadoop.hbase.util.Bytes;</span><br><span class="line">import org.junit.Test;</span><br><span class="line"></span><br><span class="line">public class HbaseTest &#123;</span><br><span class="line">    public static Log log=LogFactory.getLog(HbaseInsert1.class);</span><br><span class="line">    public static String al_TableName=&quot;employees&quot;;//表名</span><br><span class="line">    public static String columnFamily=&quot;student_name&quot;;//列族</span><br><span class="line">    public static String rowFamily=&quot;h2&quot;;//行键</span><br><span class="line">    static Configuration conf=null;</span><br><span class="line">    </span><br><span class="line">    static&#123;</span><br><span class="line">        conf = HBaseConfiguration.create();</span><br><span class="line">        conf.set(&quot;hbase.zookeeper.quorum&quot;, &quot;62f169f8d9d1&quot;);// 使用eclipse时必须添加这个，否则无法定位master需要配置hosts</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public static void main(String[] args) throws IOException &#123;</span><br><span class="line">    	testCreateTable();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    /**</span><br><span class="line">     * 创建表</span><br><span class="line">     * HBaseAdmin </span><br><span class="line">     * HTableDescriptor</span><br><span class="line">     */</span><br><span class="line">    @Test</span><br><span class="line">    public static void testCreateTable()&#123;</span><br><span class="line">        </span><br><span class="line">        HBaseAdmin admin=null;</span><br><span class="line">        HTableDescriptor htd=null;</span><br><span class="line">        try &#123;</span><br><span class="line">             admin=new HBaseAdmin(conf);</span><br><span class="line">            //判断要创建的表是否已经存在</span><br><span class="line">            if(admin.tableExists(al_TableName))&#123;</span><br><span class="line">                System.out.println(al_TableName+&quot;表已经存在&quot;);</span><br><span class="line">                return;</span><br><span class="line">            &#125;else&#123;</span><br><span class="line">                htd=new HTableDescriptor(al_TableName.getBytes());    </span><br><span class="line">                //设置列族</span><br><span class="line">                htd.addFamily(new HColumnDescriptor(columnFamily));</span><br><span class="line">                admin.createTable(htd);</span><br><span class="line">                System.out.println(al_TableName+&quot;表创建成功！！！&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    /**</span><br><span class="line">     * 删除表</span><br><span class="line">     */</span><br><span class="line">    @Test</span><br><span class="line">    public static void testDeletTable()&#123;</span><br><span class="line">        HBaseAdmin admin=null;</span><br><span class="line">        try &#123;</span><br><span class="line">            admin=new HBaseAdmin(conf);</span><br><span class="line">            if(admin.tableExists(al_TableName))&#123;</span><br><span class="line">                System.out.println(&quot;table is exits&quot;);</span><br><span class="line">                //如果表存在，则注为失效状态</span><br><span class="line">                admin.disableTable(al_TableName);//删除表</span><br><span class="line">                admin.deleteTable(al_TableName);</span><br><span class="line">                System.out.println(&quot;删除成功&quot;);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ol start="8" type="1">
+<li>测试代码</li>
+</ol>
+<p>运行：<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00c27053dcc.jpg" /></p>
+<p>查看Console：<br />
+<img data-src="https://i.loli.net/2018/11/30/5c00c2bf30e83.jpg" /> 测试成功！</p>
+<p>访问网址：http://202.204.62.145:16010/<br />
+也可以看到出现了名字是'employees'的表 <img data-src="https://i.loli.net/2018/11/30/5c00c311be0f3.jpg" /></p>
+]]></content>
+      <categories>
+        <category>BigData（大数据）</category>
+        <category>HBase</category>
+        <category>Eclipse</category>
+      </categories>
+      <tags>
+        <tag>BigData（大数据）</tag>
+        <tag>HBase</tag>
+        <tag>Eclipse</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>BigData-4-HBase-Thrift下载、安装、配置（用于Python操作HBase）</title>
+    <url>/2018/12/27/BigData-4-HBase-Thrift%E4%B8%8B%E8%BD%BD%E3%80%81%E5%AE%89%E8%A3%85%E3%80%81%E9%85%8D%E7%BD%AE%EF%BC%88%E7%94%A8%E4%BA%8EPython%E6%93%8D%E4%BD%9CHBase%EF%BC%89/</url>
+    <content><![CDATA[<h4 id="参考网址">参考网址：</h4>
+<blockquote>
+<p>https://www.cnblogs.com/junle/p/7611540.html</p>
+</blockquote>
+<hr />
+<h4 id="下载安装thrift">下载安装Thrift</h4>
+<blockquote>
+<p>其他语言调用HBase时，需要通过Thrift进行连接</p>
+</blockquote>
+<ol type="1">
+<li>安装Thrift依赖：
+<ul>
+<li>切换到root用户：<code>su</code></li>
+<li>更新apt-get：<code>apt-get update</code></li>
+</ul></li>
+</ol>
+<span id="more"></span>
+<pre><code>+ 安装Thrift依赖：`apt-get install automake bison flex g++ git libboost1.55 libevent-dev libssl-dev libtool make pkg-config`</code></pre>
+<ol start="2" type="1">
+<li>下载Thrift，解压后进行编译安装：
+<ul>
+<li>切换到root用户：<code>su</code></li>
+<li><code>cd /opt/</code></li>
+<li><code>wget http://mirrors.tuna.tsinghua.edu.cn/apache/thrift/0.11.0/thrift-0.11.0.tar.gz</code></li>
+<li>退出容器，但不关闭<code>ctrl+P+Q</code></li>
+<li>改为root用户<code>su</code>，输入密码</li>
+<li>拷贝安装包<code>docker cp af86:/opt/thrift-0.11.0.tar.gz /home1/jupyter_data/ZhouJiacheng/</code></li>
+<li>进入容器<code>docker exec -it c86a /bin/bash</code></li>
+<li><code>tar zxf thrift-0.11.0.tar.gz</code></li>
+<li><code>cd thrift-0.11.0</code></li>
+<li><code>./configure --with-cpp --with-boost --with-python --without-csharp --with-java --without-erlang --without-perl --with-php --without-php_extension --without-ruby --without-haskell  --without-go</code></li>
+<li><code>make</code># 这一步是编译，耗时较长</li>
+<li><code>make install</code></li>
+</ul></li>
+</ol>
+<h4 id="启动hbase的thrift服务">启动HBase的Thrift服务</h4>
+<p><code>/opt/hbase-1.4.8/bin/hbase-daemon.sh start thrift</code></p>
+<h4 id="增加端口映射">增加端口映射</h4>
+<ol type="1">
+<li>制作镜像</li>
+<li>新建容器<br />
+<code>docker run -itd -p 2181:2181 -p 4242:4242 -p 8088:8088 -p 9000:9000 -p 9090:9090 -p 16000:16000 -p 16010:16010 -p 16201:16201 -p 16301:16301 -p 50020:50020 -p 50070:50070 ubuntu:hbase</code></li>
+</ol>
+<h4 id="在python环境中安装thrift">在Python环境中安装Thrift</h4>
+<ol type="1">
+<li>用Virtualenv创建虚拟环境，命名<code>hbase_env</code>
+<ul>
+<li>创建虚拟环境：<code>virtualenv -p C:\Python27\python2.exe E:\PythonProjects\Envs\hbase_env</code></li>
+<li>激活：<code>virtualenv E:\PythonProjects\Envs\hbase_env\Scripts\activate</code></li>
+<li>执行命令（把pip改成pip2,因为电脑中有两个版本的Python，所以需要这一步）：<code>python2 -m pip install --upgrade pip --force-reinstall</code></li>
+<li>之后安装包可以使用<code>pip</code>或<code>pip2</code></li>
+</ul></li>
+<li><code>pip install thrift</code></li>
+<li><code>pip install hbase-thrift</code></li>
+</ol>
+]]></content>
+      <categories>
+        <category>BigData（大数据）</category>
+        <category>HBase</category>
+        <category>Thrift</category>
+      </categories>
+      <tags>
+        <tag>BigData（大数据）</tag>
+        <tag>HBase</tag>
+        <tag>Thrift</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>BigData-5-OpenTSDB下载、安装、配置</title>
+    <url>/2018/12/02/BigData-5-OpenTSDB%E4%B8%8B%E8%BD%BD%E3%80%81%E5%AE%89%E8%A3%85%E3%80%81%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<h4 id="参考网址">参考网址：</h4>
+<blockquote>
+<p>https://blog.csdn.net/olinbsoft/article/details/79416813（最主要的） https://www.jianshu.com/p/e151bdb70172 https://blog.csdn.net/zhangzhensea/article/details/77890504</p>
+</blockquote>
+<hr />
+<h4 id="下载opentsdb">下载OpenTSDB</h4>
+<p>从 github 上下载 OpenTSDB 的 release 版本的deb包，下载地址：https://github.com/OpenTSDB/opentsdb/releases</p>
+<p><strong>还是以root用户执行</strong></p>
+<ol type="1">
+<li><code>cd /opt/</code></li>
+<li><code>wget https://github.com/OpenTSDB/opentsdb/releases/download/v2.4.0RC2/opentsdb-2.4.0RC2_all.deb</code></li>
+</ol>
+<span id="more"></span>
+<ol type="1">
+<li>备份一份到宿主机
+<ol type="1">
+<li>退出容器但不关闭，<code>ctrl+P+Q</code></li>
+<li>切换到root用户<code>su</code>，输入密码</li>
+<li><code>docker cp 62f1:/opt/opentsdb-2.4.0RC2_all.deb /home1/jupyter_data/ZJC/</code></li>
+</ol></li>
+</ol>
+<h4 id="安装opentsdb">安装OpenTSDB</h4>
+<ol type="1">
+<li>进入容器<code>docker exec -it 62f1 /bin/bash</code></li>
+<li>切换到root用户<code>su</code>，输入密码</li>
+<li><code>cd /opt/</code></li>
+<li>安装
+<ul>
+<li><code>dpkg -i opentsdb-2.4.0RC2_all.deb</code></li>
+<li><code>apt-get install -f</code></li>
+</ul></li>
+</ol>
+<h4 id="配置opentsdb">配置OpenTSDB</h4>
+<p>编辑<code>/opt/opentsdb-2.3.1/src/opentsdb.conf</code>文件</p>
+<ol type="1">
+<li><code>vi /etc/opentsdb/opentsdb.conf</code></li>
+<li>配置
+<ul>
+<li><code>tsd.storage.hbase.zk_quorum = localhost</code></li>
+</ul></li>
+</ol>
+<h4 id="建表">建表</h4>
+<p>第一次用HBase实例运行OpenTSDB，需要创建必要的HBase表</p>
+<ol type="1">
+<li>切换到hadoop用户<code>su hadoop</code></li>
+<li><code>cd /usr/share/opentsdb/tools</code></li>
+<li><code>env COMPRESSION=NONE HBASE_HOME=/opt/hbase-1.4.8 JAVA_HOME=/usr/lib/jvm/java-8-oracle/  /usr/share/opentsdb/tools/create_table.sh</code></li>
+</ol>
+<blockquote>
+<p>COMPRESSION参数指定压缩方式，可选值是 NONE，LZO，GZIP，或者 SNAPPY 。这个命令将在指定的HBase中创建四张表：tsdb, tsdb-uid, tsdb-tree 和 tsdb-meta。如果你只是评估OpenTSDB，现在就不用关心压缩方式。在生产环境中，你要使用一个最合适的有效压缩库。</p>
+</blockquote>
+<h4 id="启动">启动</h4>
+<ol type="1">
+<li>切换到root用户<code>su</code>，输入密码</li>
+<li><code>service opentsdb start</code></li>
+</ol>
+<blockquote>
+<p>注：停止命令<code>service opentsdb stop</code></p>
+</blockquote>
+<p>浏览器访问：http://202.204.62.145:4242/</p>
+<p>截图：<br />
+<img data-src="https://i.loli.net/2018/12/02/5c0394f40ec57.jpg" /></p>
+<h4 id="安装gnuplot">安装Gnuplot</h4>
+<p><strong>还是以root用户执行</strong></p>
+<ol type="1">
+<li><code>apt-get install gnuplot</code></li>
+<li><code>apt-get install gnuplot-x11</code></li>
+</ol>
+<h4 id="制作镜像">制作镜像</h4>
+<ol type="1">
+<li>在容器里
+<ul>
+<li>切换到root用户<code>su</code>，输入密码</li>
+<li><code>service opentsdb stop</code></li>
+<li>切换到hadoop用户<code>su hadoop</code></li>
+<li><code>stop-hbase.sh</code></li>
+<li><code>stop-all.sh</code></li>
+</ul></li>
+<li>退出容器，但不关闭<code>ctrl+P+Q</code></li>
+<li>制作镜像<code>docker commit -m "opentsdb installed" 62f1 ubuntu:opentsdb</code></li>
+</ol>
+]]></content>
+      <categories>
+        <category>BigData（大数据）</category>
+        <category>OpenTSDB</category>
+      </categories>
+      <tags>
+        <tag>BigData（大数据）</tag>
+        <tag>OpenTSDB</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>BigData-6-HBase可视化工具Phoenix安装和Squirrel安装</title>
+    <url>/2018/12/03/BigData-6-HBase%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7Phoenix%E5%AE%89%E8%A3%85%E5%92%8CSquirrel%E5%AE%89%E8%A3%85/</url>
+    <content><![CDATA[<h4 id="参考网址">参考网址</h4>
+<blockquote>
+<p>https://www.cnblogs.com/raphael5200/p/5260198.html</p>
+</blockquote>
+<hr />
+<h4 id="在服务器中下载phoenix">在服务器中下载Phoenix</h4>
+<p>Phoenix下载地址：http://mirror.bit.edu.cn/apache/phoenix/</p>
+<p>在145服务器中切换到root用户<code>su root</code></p>
+<p>输入密码</p>
+<span id="more"></span>
+<p><code>cd /home1/jupyter_data/ZJC/</code></p>
+<p><code>wget http://archive.apache.org/dist/phoenix/apache-phoenix-4.14.1-HBase-1.4/bin/apache-phoenix-4.14.1-HBase-1.4-bin.tar.gz</code></p>
+<h4 id="拷贝一份到容器中">拷贝一份到容器中</h4>
+<p><code>docker cp /home1/jupyter_data/ZJC/apache-phoenix-4.14.1-HBase-1.4-bin.tar.gz 62f1:/opt/</code></p>
+<h4 id="在容器中解压">在容器中解压</h4>
+<p><code>docker exec -it 62f1 /bin/bash</code></p>
+<p><code>cd /opt/</code></p>
+<p><code>tar -zxvf apache-phoenix-4.14.1-HBase-1.4-bin.tar.gz</code></p>
+<h4 id="在容器中配置phoenix">在容器中配置Phoenix</h4>
+<ol type="1">
+<li><p>将apache-phoenix-4.14.1-HBase-1.4-bin.tar.gz目录下phoenix-core-4.14.1-HBase-1.4.jar、phoenix-4.14.1-HBase-1.4-server.jar拷贝到hbase的lib目录下：</p>
+<p><code>cp ./phoenix-core-4.14.1-HBase-1.4.jar /opt/hbase-1.4.8/lib/</code></p>
+<p><code>cp ./phoenix-4.14.1-HBase-1.4-server.jar /opt/hbase-1.4.8/lib/</code></p></li>
+<li><p>将hbase的配置文件hbase-site.xml、 /opc/hadoop-2.7.7/etc/hadoop下的core-site.xml 、hdfs-site.xml放到phoenix-4.5.2-HBase-1.1-bin/bin/下，替换Phoenix原来的配置文件：</p>
+<p><code>cp /opt/hbase-1.4.8/conf/hbase-site.xml /opt/apache-phoenix-4.14.1-HBase-1.4-bin/bin/hbase-site.xml</code></p>
+<p><code>cp /opt/hadoop-2.7.7/etc/hadoop/core-site.xml /opt/apache-phoenix-4.14.1-HBase-1.4-bin/bin/</code></p>
+<p><code>cp /opt/hadoop-2.7.7/etc/hadoop/hdfs-site.xml /opt/apache-phoenix-4.14.1-HBase-1.4-bin/bin/</code></p></li>
+<li><p>验证是否成功</p>
+<p><code>cd /opt/apache-phoenix-4.14.1-HBase-1.4-bin/bin</code></p>
+<p><code>./sqlline.py 62f169f8d9d1:2181</code></p>
+<p>成功截图： <img data-src="https://i.loli.net/2018/12/01/5c023b4d74784.jpg" /></p></li>
+<li><p>输入<code>!tables</code>，查看都有哪些表 如图：<br />
+<img data-src="https://i.loli.net/2018/12/01/5c023c41ccda9.jpg" /></p></li>
+<li><p>输入<code>!exit</code>退出</p></li>
+</ol>
+<h4 id="在145服务器中解压">在145服务器中解压</h4>
+<p><code>tar -zxvf /home1/jupyter_data/ZJC/apache-phoenix-4.14.1-HBase-1.4-bin.tar.gz</code></p>
+<h4 id="在windows中配置hosts">在Windows中配置Hosts</h4>
+<ol type="1">
+<li>用记事本打开<code>C:\Windows\System32\drivers\etc\hosts</code></li>
+<li>确保<code>127.0.0.1       localhost</code>被注释</li>
+<li>在最后加入<code>202.204.62.145 62f169f8d9d1</code></li>
+<li>保存</li>
+</ol>
+<h4 id="在windows中下载squirrel-sql-client">在Windows中下载SQuirreL SQL Client</h4>
+<p><strong>注意在Windows中操作</strong></p>
+<p>SQuirreL SQL Client下载地址：http://www.squirrelsql.org/</p>
+<p>下载完成后，将<code>squirrel-sql-3.9.0-standard.jar</code>文件移动到<code>E:\Software\SQuirreL</code></p>
+<h4 id="在windows中安装squirrel-sql-client">在Windows中安装SQuirreL SQL Client</h4>
+<p><strong>注意在Windows中操作</strong></p>
+<p><strong>注意jdk版本要求至少1.8！</strong></p>
+<ol type="1">
+<li>进入cmd</li>
+<li><code>e:</code></li>
+<li><code>cd Software</code></li>
+<li><code>cd SQuirreL</code></li>
+<li><code>java -jar squirrel-sql-3.9.0-standard.jar</code> <img data-src="https://i.loli.net/2018/12/01/5c02146a592be.jpg" /></li>
+<li>弹出安装界面，一路Next，记住安装路径为<code>C:\Program Files\squirrel-sql-3.9.0</code></li>
+</ol>
+<h4 id="从服务器中拷贝jar包到windows">从服务器中拷贝jar包到Windows</h4>
+<p>使用WinSCP</p>
+<p>将服务器中解压到的<code>/home1/jupyter_data/ZJC/apache-phoenix-4.14.1-HBase-1.4-bin</code>目录下的如下两个jar包： 1. <code>phoenix-4.14.1-HBase-1.4-client.jar</code> 2. <code>phoenix-core-4.14.1-HBase-1.4.jar</code></p>
+<p>拷贝到squirrel安装目录的lib下<code>C:\Program Files\squirrel-sql-3.9.0\lib</code></p>
+<h4 id="启动squirrel-sql-client">启动SQuirreL SQL Client</h4>
+<p>在安装目录<code>C:\Program Files\squirrel-sql-3.9.0</code>下双击<code>squirrel-sql.bat</code></p>
+<h4 id="配置squirrel-sql-client">配置SQuirreL SQL Client</h4>
+<ol type="1">
+<li><p>点击左侧<code>Drivers</code><br />
+<img data-src="https://i.loli.net/2018/12/01/5c02251602391.jpg" /></p></li>
+<li><p>点击<code>+</code><br />
+<img data-src="https://i.loli.net/2018/12/01/5c0229e26abd3.jpg" /></p></li>
+<li><p>按图配置<br />
+Name:<code>phoenix</code></p>
+<p>Example URL:<code>jdbc:phoenix:202.204.62.145:2181</code></p>
+<p>Class Name:<code>org.apache.phoenix.jdbc.PhoenixDriver</code></p>
+<p><img data-src="https://i.loli.net/2018/12/01/5c022b953cee2.jpg" /></p></li>
+</ol>
+<h4 id="连接phoenix">连接Phoenix</h4>
+<ol type="1">
+<li>点击左侧<code>Aiiasses</code><br />
+<img data-src="https://i.loli.net/2018/12/01/5c022c19acf73.jpg" /></li>
+<li>点击<code>+</code><br />
+<img data-src="https://i.loli.net/2018/12/01/5c022c2e63837.jpg" /></li>
+<li>按图配置<br />
+<img data-src="https://i.loli.net/2018/12/01/5c02371f93c80.jpg" /> 用户名hadoop 密码hadoop123</li>
+<li>点击Test进行测试连接 出现connection successful，测试成功 <img data-src="https://i.loli.net/2018/12/01/5c0237694a8d5.jpg" /></li>
+<li>点击OK连接</li>
+</ol>
+]]></content>
+      <categories>
+        <category>BigData（大数据）</category>
+        <category>HBase</category>
+      </categories>
+      <tags>
+        <tag>BigData（大数据）</tag>
+        <tag>HBase</tag>
+        <tag>Phoenix</tag>
+        <tag>Squirrel</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CNN结构演化</title>
+    <url>/2019/04/01/CNN%E7%BB%93%E6%9E%84%E6%BC%94%E5%8C%96/</url>
+    <content><![CDATA[<blockquote>
+<p>http://www.cnblogs.com/yanshw/p/10609615.html</p>
+</blockquote>
+<h1 id="cnn发展史">CNN发展史</h1>
+<p><img data-src="https://i.loli.net/2019/04/01/5ca1cd63e8cfe.jpg" /></p>
+<p>这是imageNet比赛的历史成绩</p>
+<p>可以看到准确率越来越高，网络越来越深。</p>
+<span id="more"></span>
+<p>加深网络比加宽网络有效的多，这已是公认的结论。</p>
+<h2 id="cnn结构演化图">CNN结构演化图</h2>
+<p><img data-src="https://i.loli.net/2019/04/01/5ca1cdbee96b0.jpg" /></p>
+<h2 id="alexnet">AlexNet</h2>
+<p>诞生于2012年，因为当时用了两个GPU（硬件设备差），所以结构图是2组并行 <img data-src="https://i.loli.net/2019/04/01/5ca1ce5ad5dad.jpg" /></p>
+<p>网络结构总共8层，5个卷积层，3个全连接层，最后输出1000个分类</p>
+<h4 id="分层结构图">分层结构图</h4>
+<p><img data-src="https://i.loli.net/2019/04/01/5ca1ce724cd68.jpg" /></p>
+<p>简单解释如下：</p>
+<p>conv1：输入为224x224x3，96个shape为11x11x3的卷积核，步长为4，输出55x55x96的特征图，(224-11)/4+1，paddig为valid，故等于55，relu，池化，池化视野3x3，步长为2，这个池化稍有不同，后面解释，然后，lrn，局部归一化，后面解释，输出27x27x96　　（这里输入的224在卷积时计算不方便，后来改成了227）</p>
+<p>conv2 conv3 conv4 conv5基本类似</p>
+<p>fc6：将输出6x6x256展开成一维9216，接4096个神经元，输出4096个值，dropout，还是4096个值</p>
+<p>fc7：写的有些问题，第一个框内应该是4096，不打紧</p>
+<p>fc8：输出1000个类别</p>
+<h4 id="注意几点">注意几点</h4>
+<ol type="1">
+<li>重叠池化：一般情况下，我们的池化视野和步长是一样的，但是这里池化视野大于步长，这样就有重叠，故称为重叠池化</li>
+<li>局部响应归一化：虽然relu不会梯度饱和，但是笔者认为lrn可以提高模型的泛化能力</li>
+</ol>
+<h4 id="alexnet较之前网络的改进">AlexNet较之前网络的改进</h4>
+<ol type="1">
+<li>网络变深</li>
+<li>relu激活函数</li>
+<li>数据增强</li>
+</ol>
+<p>　　通俗理解就是准备更多更全的数据</p>
+<p>　　// 法1：平移图像和水平翻转图像，从原始的256x256的图像中随机提取227x227的块，并且水平翻转，作为训练数据</p>
+<p>　　// 法2：改变训练图像的RGB通道的强度。特别的，本文对整个ImageNet训练集的RGB像素值进行了PCA。对每一幅训练图像，本文加上多倍的主成分，倍数的值为相应的特征值乘以一个均值为0标准差为0.1的高斯函数产生的随机变量。</p>
+<ol start="4" type="1">
+<li>dropout</li>
+</ol>
+<p>　　// 以一定的概率将神经元的输出置为0，就是忽略该神经元的存在，既不前向传递，也不反向传播，这是AlexNet很大的一个创新。</p>
+<p>数据增强和dropout都是防止过拟合的。</p>
+<h2 id="vgg">VGG</h2>
+<blockquote>
+<p>Simonyan K, Zisserman A. Very deep convolutional networks for large-scale image recognition[J]. arXiv preprint arXiv:1409.1556, 2014.</p>
+</blockquote>
+<p>诞生于2014年，imageNet2014的第二名</p>
+<p><img data-src="https://i.loli.net/2019/04/01/5ca1ceb15376c.jpg" /></p>
+<p>上图是VGG16--黑色框+蓝色框=16</p>
+<p>====================================</p>
+<p><img data-src="https://i.loli.net/2019/04/01/5ca1ced443403.jpg" /></p>
+<p>上图为VGG19</p>
+<p>====================================</p>
+<p>VGG共有6种结构，常用的是D和E，即VGG16和VGG19</p>
+<p>VGG网络结构非常规则，共分为5组卷积，每组卷积都使用3x3的卷积核，卷积后都使用2x2的max池化，最后接3个全连接</p>
+<p>可以看到C网络的最后3个卷积使用了1x1的卷积，这是什么意思呢?</p>
+<p>1x1的卷积其实是对特征的线性变换，主要用来综合特征，这个方法后来被推广解决多种问题。</p>
+<h4 id="vgg的优点">VGG的优点</h4>
+<ol type="1">
+<li><p>使用较小的卷积核，使得参数更少，网络更深</p></li>
+<li><p>卷积层的堆叠，这样做一可以保证感受视野，即2个3x3的感受野堆叠相当于一个5x5，二是经过多个非线性转换，提取特征的能力更强</p></li>
+<li><p>VGG在训练时，先训练简单的如A网络，然后用A网络的参数（卷积和全连接）初始化后面的复杂网络，更快收敛</p></li>
+<li><p>VGG认为lrn作用不大，去掉了lrn</p></li>
+</ol>
+<p>VGG虽然网络更深，但比AlexNet收敛更快</p>
+<h4 id="vgg的缺点">VGG的缺点</h4>
+<p>占用内存较大</p>
+<h4 id="vgg的数据处理">VGG的数据处理</h4>
+<ol type="1">
+<li>数据标准化</li>
+<li>数据增强采用Multi-Scale方法。将原始图像缩放到不同尺寸S，然后再随机裁切[224,224]的图片，这样能增加很多数据量，对于防止模型过拟合有很不错的效果。实践中，作者令S在[256,512]这个区间内取值，使用Multi-Scale获得多个版本的数据，并将多个版本的数据合在一起进行训练。</li>
+</ol>
+<h2 id="googlenet">GoogleNet</h2>
+<p>诞生于2014年，imageNet2014的第一名，和VGG一同出道，当VGG是第二名，但因其结构复杂，所以没有VGG更常用。</p>
+<h4 id="结构图">结构图</h4>
+<p><img data-src="https://i.loli.net/2019/04/01/5ca1d07c7e075.jpg" /></p>
+<p>网络太过复杂，不多解释了，这个网络估计也很少被用到。</p>
+<p>但是 googlenet 有个很大的创新点，并且被后来很多网络借鉴，就是 global average pooling</p>
+<p>global average pooling 一般放在网络最后，替代全连接层。</p>
+<p>因为全连接层参数太多，占整个模型参数的比例可以高达90%左右，很难训练，而且参数太多，没有合适的正则化方法，很容易过拟合</p>
+<p>global average pooling 做法很简单，就是对每个feature map取全局average，然后每个feature变成了一个数，然后最后接了一个 输出层fc网络</p>
+<p>为什么这样，我以后会讲</p>
+<p><img data-src="https://i.loli.net/2019/04/01/5ca1d1065f7c3.jpg" /></p>
+<h2 id="resnet">ResNet</h2>
+<blockquote>
+<p>He K, Zhang X, Ren S, et al. Deep residual learning for image recognition[C]//Proceedings of the IEEE conference on computer vision and pattern recognition. 2016: 770-778.</p>
+</blockquote>
+<p>ResNet借鉴了上面的global average pooling</p>
+<p>ResNet 又叫深度残差网络</p>
+<h4 id="整体结构">整体结构</h4>
+<p>Resnet50和Resnet101是其中最常用的网络结构</p>
+<p><img data-src="https://i.loli.net/2019/04/01/5ca1d3b0ce89e.jpg" /></p>
+<h4 id="深度网络的退化问题">深度网络的退化问题</h4>
+<p>深度网络难以训练，梯度消失，梯度爆炸，老生常谈，不多说</p>
+<p><img data-src="https://i.loli.net/2019/04/01/5ca1d1e1cc7dc.jpg" /></p>
+<p>ResNet 解决了这个问题，并且将网络深度扩展到了最多152层。怎么解决的呢？</p>
+<h4 id="残差学习">残差学习</h4>
+<p>结构如图：</p>
+<p><img data-src="https://i.loli.net/2019/04/01/5ca1d22a8e8c7.jpg" /></p>
+<p>在普通的卷积过程中加入了一个x的恒等映射（identity mapping）</p>
+<p>专家把这称作 skip connections 或者 shortcut connections</p>
+<p>为什么要这样呢？下面我从多个角度阐述这个问题。</p>
+<h5 id="生活角度">生活角度</h5>
+<p>每学习一个模型，我都希望能用日常的生活去解释为什么模型要这样，一是加深对模型的理解，二是给自己搭建模型寻找灵感，三是给优化模型寻找灵感。</p>
+<p>resnet 无疑是解决很难识别的问题的，那我举一个日常生活中人类也难以识别的问题，看看这个模型跟人类的识别方法是否一致。</p>
+<p>比如人类识别杯子里的水烫不烫</p>
+<p>一杯水，我摸了一下，烫，好，我的神经开始运转，最后形成理论杯子里的水烫，这显然不对</p>
+<p>又一杯水，我一摸，不烫，好嘛，这咋办，认知混乱了，也就是无法得到有效的参数，</p>
+<p>那人类是怎么办呢？</p>
+<p>我们不止是摸一摸，而且在摸过之后还要把杯子拿起来仔细看看，有什么细节可以帮助我们更好的识别，这就是在神经经过运转后，又把x整体输入，</p>
+<p>当然即使我们拿起杯子看半天，也可能看不出任何规律来帮助我们识别，那人类的作法是什么呢？我记住吧，这种情况要小心，这就是梯度消失了，学习不到任何规律，记住就是恒等映射，</p>
+<p>这个过程和resnet是一致的。</p>
+<h5 id="网络结构角度">网络结构角度</h5>
+<p><img data-src="https://i.loli.net/2019/04/01/5ca1d29ae573b.jpg" /></p>
+<p>当梯度消失时，f(x)=0，y=g(x)=relu(x)=x，怎么理解呢？</p>
+<ol type="1">
+<li><p>当梯度消失时，模型就是记住，长这样的就是该类别，是一个大型的过滤器</p></li>
+<li><p>在网络上堆叠这样的结构，就算梯度消失，我什么也学不到，我至少把原来的样子恒等映射了过去，相当于在浅层网络上堆叠了“复制层”，这样至少不会比浅层网络差。</p></li>
+<li><p>万一我不小心学到了什么，那就赚大了，由于我经常恒等映射，所以我学习到东西的概率很大。</p></li>
+</ol>
+<h5 id="数学角度">数学角度</h5>
+<p><img data-src="https://i.loli.net/2019/04/01/5ca1d2cd609b2.jpg" /></p>
+<p>可以看到 有1 的存在，导数基本不可能为0</p>
+<h5 id="那为什么叫残差学习呢">那为什么叫残差学习呢</h5>
+<p><img data-src="https://i.loli.net/2019/04/01/5ca1d2f76374b.jpg" /></p>
+<p>可以看到 F(x) 通过训练参数 得到了H(x)-x，也就是残差，所以叫残差学习，这比学习H(x)要简单的多。</p>
+<h4 id="等效映射-identity-mapping">等效映射 identity mapping</h4>
+<p>上面提到残差学习中需要进行 F(x)+x，在resnet中，卷积都是 same padding 的，当通道数相同时，直接相加即可，</p>
+<p>但是通道数不一样时需要寻求一种方法使得 y=f(x)+wx</p>
+<p>实现w有两种方式</p>
+<ol type="1">
+<li>直接补0</li>
+<li>通过使用多个 1x1 的卷积来增加通道数。</li>
+</ol>
+<h4 id="网络结构block">网络结构——block</h4>
+<p>block为一个残差单元，resnet 网络由多个block 构成，resnet 提出了两种残差单元</p>
+<p><img data-src="https://i.loli.net/2019/04/01/5ca1d376ad89e.jpg" /></p>
+<p>左边针对的是ResNet34浅层网络，右边针对的是ResNet50/101/152深层网络，右边这个又被叫做 bottleneck</p>
+<p>bottleneck 很好地减少了参数数量，第一个1x1的卷积把256维channel降到64维，第三个又升到256维，总共用参数：1x1x256x64+3x3x64x64+1x1x64x256=69632，</p>
+<p>如果不使用 bottleneck，参数将是 3x3x256x256x2=1179648，差了16.94倍</p>
+<p>这里的输出通道数是根据输入通道数确定的，因为要与x相加。</p>
+<h4 id="与vgg比较">与VGG比较</h4>
+<ol type="1">
+<li>与vgg相比，其参数少得多，因为vgg有3个全连接层，这需要大量的参数，而resnet用 avg pool 代替全连接，节省大量参数。</li>
+<li>参数少，残差学习，所以训练效率高</li>
+</ol>
+<h4 id="结构参数">结构参数</h4>
+<p>Resnet50和Resnet101是其中最常用的网络结构。</p>
+<p><img data-src="https://i.loli.net/2019/04/01/5ca1d41723188.jpg" /></p>
+<p>我们看到所有的网络都分成5部分，分别是：conv1，conv2_x，conv3_x，conv4_x，conv5_x</p>
+<p>其结构是相对固定的，只是通道数根据输入确定。</p>
+]]></content>
+      <categories>
+        <category>Machine Learning（机器学习）</category>
+        <category>Deep Learning（深度学习）</category>
+        <category>CNN（卷积神经网络）</category>
+      </categories>
+      <tags>
+        <tag>Machine Learning（机器学习）</tag>
+        <tag>Deep Learning（深度学习）</tag>
+        <tag>CNN（卷积神经网络）</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Django运行</title>
+    <url>/2018/12/24/Django%E8%BF%90%E8%A1%8C/</url>
+    <content><![CDATA[<p>方法一：</p>
+<ol type="1">
+<li>激活虚拟环境<code>E:\PythonProjects\Envs\web_env\Scripts\activate</code><br />
+</li>
+<li>进入目录<code>E:\PythonProjects\TeachingSecretarySystem\TSSystem</code><br />
+</li>
+<li>运行命令<code>python manage.py runserver</code></li>
+</ol>
+<hr />
+<p>方法二： <span id="more"></span> <img data-src="https://i.loli.net/2018/12/24/5c204f8cd9720.jpg" /></p>
+]]></content>
+      <categories>
+        <category>Python</category>
+        <category>Django</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>Django</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>BigData-新建HBase容器要做的事</title>
+    <url>/2018/11/30/BigData-%E6%96%B0%E5%BB%BAHBase%E5%AE%B9%E5%99%A8%E8%A6%81%E5%81%9A%E7%9A%84%E4%BA%8B/</url>
+    <content><![CDATA[<h4 id="制作镜像">制作镜像</h4>
+<ol type="1">
+<li>在容器里
+<ul>
+<li>切换到root用户<code>su</code>，输入密码</li>
+<li><code>service opentsdb stop</code></li>
+<li>切换到hadoop用户<code>su hadoop</code></li>
+<li><code>stop-hbase.sh</code></li>
+<li><code>stop-all.sh</code></li>
+</ul></li>
+<li>退出容器，但不关闭<code>ctrl+P+Q</code></li>
+<li>制作镜像<code>docker commit -m "thrift installed" 5ac0 ubuntu:thrift</code></li>
+</ol>
+<span id="more"></span>
+<h4 id="停止原来的容器释放端口占用">停止原来的容器，释放端口占用</h4>
+<p><code>docker stop 5ac0</code></p>
+<h4 id="新建容器">新建容器</h4>
+<p><code>docker run -itd -p 2181:2181 -p 4242:4242 -p 8088:8088 -p 9000:9000 -p 9090:9090 -p 16000:16000 -p 16010:16010 -p 16201:16201 -p 16301:16301 -p 50020:50020 -p 50070:50070 ubuntu:thrift</code></p>
+<h4 id="进入容器">进入容器</h4>
+<p><code>docker exec -it $container_id /bin/bash</code></p>
+<h4 id="配置etchosts文件加入hadoop1">配置/etc/hosts文件，加入hadoop1</h4>
+<p><strong>root</strong>身份下执行</p>
+<p>查看ip地址<code>ifconfig</code></p>
+<p><code>vi /etc/hosts</code></p>
+<p>加入： <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#Hadoop Name Node</span><br><span class="line">$container_ip  hadoop1</span><br></pre></td></tr></table></figure></p>
+<h4 id="开启ssh">开启ssh</h4>
+<p><strong>root</strong>身份下执行</p>
+<p><code>service ssh start</code></p>
+<h4 id="测试ssh">测试ssh</h4>
+<ol type="1">
+<li>切换到hadoop用户<code>su hadoop</code></li>
+<li><code>ssh hadoop1</code></li>
+</ol>
+<h4 id="删除hdfs使用的linux目录">删除HDFS使用的Linux目录</h4>
+<p><strong>hadoop</strong>身份下执行</p>
+<p>~~rm -rf /home/hadoop/dfs/data/*~~</p>
+<p>~~rm -rf /home/hadoop/dfs/name/*~~</p>
+<p>~~rm -rf /home/hadoop/dfs/temp/*~~</p>
+<h4 id="格式化文件系统">格式化文件系统</h4>
+<p><code>hdfs namenode -format</code></p>
+<h4 id="开启hadoophbase">开启Hadoop、HBase</h4>
+<p><strong>hadoop</strong>身份下执行</p>
+<ol type="1">
+<li><code>start-all.sh</code></li>
+<li><code>start-hbase.sh</code></li>
+</ol>
+<h4 id="开启thrift">开启thrift</h4>
+<p><code>/opt/hbase-1.4.8/bin/hbase-daemon.sh start thrift</code></p>
+<p><del><strong>#### 开启OpenTSDB</strong></del></p>
+<p><del>1. 切换到root用户<code>su</code>，输入密码</del></p>
+<p><del>2. <code>service opentsdb start</code></del></p>
+]]></content>
+      <categories>
+        <category>BigData（大数据）</category>
+        <category>HBase</category>
+      </categories>
+      <tags>
+        <tag>BigData（大数据）</tag>
+        <tag>HBase</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Docker使用socks5代理</title>
+    <url>/2021/10/11/Docker%E4%BD%BF%E7%94%A8socks5%E4%BB%A3%E7%90%86/</url>
+    <content><![CDATA[<ol type="1">
+<li>创建docker服务插件目录 <code>sudo mkdir -p /etc/systemd/system/docker.service.d</code></li>
+<li>创建一个名为http-proxy.conf的文件 <code>sudo touch /etc/systemd/system/docker.service.d/http-proxy.conf</code></li>
+<li>编辑http-proxy.conf的文件 <code>sudo vim /etc/systemd/system/docker.service.d/http-proxy.conf</code></li>
+<li>写入内容(将代理ip和代理端口修改成你自己的) <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[Service]</span><br><span class="line">Environment=&quot;HTTP_PROXY=socks5://代理ip:代理端口/&quot;</span><br></pre></td></tr></table></figure></li>
+<li>重新加载服务程序的配置文件 <code>sudo systemctl daemon-reload</code></li>
+<li>重启docker <code>sudo systemctl restart docker</code></li>
+<li>验证是否配置成功 <code>systemctl show --property=Environment docker</code><br />
+输出<code>"Environment=HTTP_PROXY=socks5://代理ip:代理端口/"</code>表示成功</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Docker</category>
+      </categories>
+      <tags>
+        <tag>Docker</tag>
+        <tag>Proxy</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>FFmpeg下载安装（Linux、Windows）</title>
+    <url>/2020/02/28/FFmpeg%E4%B8%8B%E8%BD%BD%E5%AE%89%E8%A3%85%EF%BC%88Linux%E3%80%81Windows%EF%BC%89/</url>
+    <content><![CDATA[<h1 id="linux">Linux</h1>
+<blockquote>
+<p>访问<code>https://www.johnvansickle.com/ffmpeg/</code>，进old releases下载ffmpeg</p>
+</blockquote>
+<ul>
+<li>下载ffmpeg</li>
+<li><code>tar xvf ffmpeg-release-64bit-static.tar.xz</code></li>
+<li><code>cd ./ffmpeg-3.3.3-64bit-static/</code> <span id="more"></span></li>
+<li><code>sudo cp ffmpeg ffprobe /usr/local/bin</code></li>
+</ul>
+<h1 id="windows">Windows</h1>
+<ol type="1">
+<li>FFmpeg下载</li>
+</ol>
+<p>下载地址：http://ffmpeg.zeranoe.com/builds/</p>
+<p>根据你的系统选择下载</p>
+<ol start="2" type="1">
+<li><p>下载好后解压，会生成一个类似名为“ffmpeg-20180820-78d4b6b-win64-static”的文件夹</p></li>
+<li><p>打开你想安装的任意磁盘，例如：d盘。新建一个名为“ffmpeg”的文件夹，将第二步解压生成的文件夹中的内容全部拷贝到“ffmpeg”文件夹中</p></li>
+<li><p>配置FFmpeg环境变量，属性-高级系统设置-环境变量-下面'系统变量'里面的Path-增加<code>C:\Program Files (x86)\ffmpeg\bin</code></p></li>
+</ol>
+<p>5.打开命令提示符窗口。输入命令“ffmpeg –version”。如果命令提示窗口返回FFmpeg的版本信息，那么就说明安装成功了，你可以在命令提示行中任意文件夹下运行FFmpeg。</p>
+<ol start="6" type="1">
+<li>FFmpeg的相关命令见官方文档</li>
+</ol>
+<p>https://www.ffmpeg.org/ffmpeg.html</p>
+]]></content>
+      <categories>
+        <category>FFmpeg</category>
+        <category>Linux</category>
+        <category>Windows</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>FFmpeg</tag>
+        <tag>Windows</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git commit后，如何撤销commit</title>
+    <url>/2021/05/26/Git%20commit%E5%90%8E%EF%BC%8C%E5%A6%82%E4%BD%95%E6%92%A4%E9%94%80commit/</url>
+    <content><![CDATA[<h1 id="问题">问题</h1>
+<p>修改了本地的代码，然后使用：</p>
+<p>git add file git commit -m '修改原因'</p>
+<p>执行commit后，还没执行push时，想要撤销这次的commit，该怎么办？</p>
+<span id="more"></span>
+<h1 id="解决方案">解决方案</h1>
+<p>使用命令：</p>
+<p>git reset --soft HEAD^</p>
+<p>这样就成功撤销了commit，如果想要连着add也撤销的话，--soft改为--hard（删除工作空间的改动代码）。</p>
+<p>命令详解：</p>
+<p>HEAD^ 表示上一个版本，即上一次的commit，也可以写成HEAD~1 如果进行两次的commit，想要都撤回，可以使用HEAD~2</p>
+<p>--soft 不删除工作空间的改动代码 ，撤销commit，不撤销git add file</p>
+<p>--hard 删除工作空间的改动代码，撤销commit且撤销add</p>
+<p>另外一点，如果commit注释写错了，先要改一下注释，有其他方法也能实现，如：</p>
+<p>git commit --amend 这时候会进入vim编辑器，修改完成你要的注释后保存即可。</p>
+<p>作者：旅行者xy 链接：https://www.jianshu.com/p/a9f327da3562 来源：简书 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+        <tag>Git commit</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git命令</title>
+    <url>/2018/11/30/Git%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h4 id="github上传本地项目到新建的远程仓库">Github上传本地项目到新建的远程仓库</h4>
+<ol type="1">
+<li>到Github新建远程仓库</li>
+<li>在本地项目文件夹根目录右键，点击<code>Git Bash Here</code>，打开git命令行</li>
+<li><code>git init</code></li>
+<li><code>git add .</code></li>
+<li><code>git commit -m 'first commit'</code></li>
+<li><code>git remote add origin https://github.com/Jacen-Chou/HBaseDemo.git</code>（把地址改成自己的远程仓库地址）</li>
+<li><code>git pull</code></li>
+<li><code>git push -u origin master</code></li>
+</ol>
+<hr />
+<span id="more"></span>
+<h4 id="切换到自己的分支">1. 切换到自己的分支</h4>
+<p>git checkout -b your_name #### 2. 确认修改状态 git status git add . #### ====== 若代码是最新的则跳过以下步骤 ====== #### 2.5. 暂存修改状态, 并拉取最新代码（若本地代码已经是最新的则跳过这一步） git stash git pull origin master #### 2.5. 重放修改状态 git stash apply #### 2.5. 重新确认修改状态 git status git add . #### ============================= #### 3. 提交代码并push到远程的自己的分支 git commit -m "[add/update/bugfix/delete/other] 新增过滤功能" git push origin your_name</p>
+<h4 id="git-status-中文乱码解决">Git Status 中文乱码解决</h4>
+<p><code>git config --global core.quotepath false</code></p>
+<hr />
+<p>git更新远程分支列表:<code>git remote update origin --prune</code></p>
+<p>git查看远程仓库地址:<code>git remote -v</code></p>
+<p>更新远程参考代码:<code>git remote update</code></p>
+<p>查看当前所在分支:<code>git branch</code></p>
+<p>查看远程分支:<code>git branch -a</code></p>
+<p>创建新分支并切换到新分支:<code>git checkout -b $new_branch_name origin/$new_branch_name</code></p>
+<p>切换分支:<code>git checkout $branch_name</code></p>
+]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git撤销单个文件的修改</title>
+    <url>/2019/08/22/Git%E6%92%A4%E9%94%80%E5%8D%95%E4%B8%AA%E6%96%87%E4%BB%B6%E7%9A%84%E4%BF%AE%E6%94%B9/</url>
+    <content><![CDATA[<h1 id="问题描述">问题描述</h1>
+<p>Git撤销单个文件的修改</p>
+<h1 id="解决办法">解决办法</h1>
+<ol type="1">
+<li><code>git log</code> 查看上一版本的sha-1</li>
+<li><code>git checkout $sha1-of-a-commit $/path_of_file</code></li>
+</ol>
+<span id="more"></span>
+<h1 id="参考网址">参考网址</h1>
+<blockquote>
+<p>https://blog.csdn.net/w605283073/article/details/80118794</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo相关文档</title>
+    <url>/2018/11/27/Hexo%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3/</url>
+    <content><![CDATA[<h2 id="官方文档">官方文档</h2>
+<p>https://hexo.io/zh-cn/ ## Next主题文档 https://hexo.io/zh-cn/</p>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+        <category>Hexo-theme-next</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+        <tag>Hexo-theme-next</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux配置SSH</title>
+    <url>/2020/01/12/Linux%E9%85%8D%E7%BD%AEssh/</url>
+    <content><![CDATA[<h1 id="服务端必须">服务端（必须）</h1>
+<h4 id="安装ssh服务端">安装ssh服务端</h4>
+<p><code>sudo apt-get install openssh-server</code></p>
+<h4 id="确认sshserver是否启动了">确认sshserver是否启动了</h4>
+<p><code>ps -e | grep ssh</code></p>
+<p>如果只有ssh-agent那ssh-server还没有启动，需要<code>/etc/init.d/ssh start</code>，如果看到sshd那说明ssh-server已经启动了</p>
+<span id="more"></span>
+<h4 id="启动sshserver">启动sshserver</h4>
+<p><code>/etc/init.d/ssh start</code></p>
+<h4 id="ssh配置如果需要">SSH配置（如果需要）</h4>
+<p>修改配置文件/etc/ssh/sshd_config，这里可以定义SSH的服务端口，默认端口是22，你可以自己定义成其他端口号如32，然后重启服务</p>
+<h4 id="重启sshserver">重启sshserver</h4>
+<p><code>/etc/init.d/ssh restart</code></p>
+<h1 id="客户端非必须">客户端（非必须）</h1>
+<h4 id="安装客户端客户端不是必须的">安装客户端（客户端不是必须的）</h4>
+<p>apt-get install ssh</p>
+<h4 id="如果安装失败则使用下面命令进行安装">如果安装失败，则使用下面命令进行安装</h4>
+<p>apt-get install openssh-client</p>
+<h4 id="ssh登录客户端">SSH登录（客户端）</h4>
+<p>ssh 192.168.159.128</p>
+<p>ssh -l cookie 192.168.152.10</p>
+<p>ssh cookie@192.168.152.10</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+        <category>SSH</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>SSH</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Liunx全局代理(apt-get|wget)</title>
+    <url>/2021/10/11/Liunx%E5%85%A8%E5%B1%80%E4%BB%A3%E7%90%86-apt-get-wget/</url>
+    <content><![CDATA[<h1 id="apt-get">apt-get</h1>
+<ol type="1">
+<li><code>vi /etc/apt/apt.conf.d/98proxy</code></li>
+<li><code>Acquire::http::proxy "socks5h://202.204.54.180:1080/";</code></li>
+<li><code>save</code> <span id="more"></span> # wget/crul/...</li>
+<li><code>sudo vi ~/.bashrc</code></li>
+<li>最后一行输入<code>export ALL_PROXY=socks5://202.204.54.3:8282</code></li>
+</ol>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Proxy</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MongoDB下载、安装和配置（Linux）</title>
+    <url>/2019/01/19/MongoDB%E4%B8%8B%E8%BD%BD%E3%80%81%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AE%EF%BC%88Linux%EF%BC%89/</url>
+    <content><![CDATA[<h4 id="参考网址">参考网址</h4>
+<h2 id="httpwww.runoob.commongodbmongodb-linux-install.html">&gt; http://www.runoob.com/mongodb/mongodb-linux-install.html</h2>
+<h4 id="新建java容器">新建Java容器</h4>
+<p><code>docker run -itd -p 27017:27017 -p 28017:28017 ubuntu:java</code></p>
+<h4 id="创建mongodb用户并设置密码">创建mongodb用户，并设置密码</h4>
+<p><code>useradd -m mongodb</code></p>
+<p><code>passwd mongodb123</code></p>
+<p>密码：<code>mongodb123</code></p>
+<h4 id="把mongodb用户加入sudoers">把mongodb用户加入sudoers</h4>
+<p><code>su</code></p>
+<p><code>vi /etc/sudoers</code></p>
+<p>找到这一 行：<code>root ALL=(ALL) ALL</code>，在下面添加<code>mongodb ALL=(ALL) ALL</code></p>
+<p>保存退出</p>
+<h4 id="下载mongodb">下载MongoDB</h4>
+<p>进入容器：<code>docker exec -it 4f8e /bin/bash</code></p>
+<p><code>cd /opt/</code></p>
+<p><code>mkdir installation-packages</code></p>
+<p><code>cd installation-packages/</code></p>
+<p>下载（官网：'https://www.mongodb.com/download-center/community'，选择Version:3.2.22 (previous release) / OS:Ubuntu 14.04 Linux 64-bit x64 / Package:TGZ）：<code>wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu1404-3.2.22.tgz</code></p>
+<p>解压：<code>tar -zxvf mongodb-linux-x86_64-ubuntu1404-3.2.22.tgz</code></p>
+<p><code>cd /usr/local/</code></p>
+<p><code>mkdir mongodb</code></p>
+<p><code>cd /opt/installation-packages/</code></p>
+<p><code>mv mongodb-linux-x86_64-ubuntu1404-3.2.22/ /usr/local/mongodb/</code></p>
+<p><code>cd /usr/local/mongodb</code></p>
+<p><code>mv mongodb-linux-x86_64-ubuntu1404-3.2.22/* ./</code></p>
+<p><code>rm -rf mongodb-linux-x86_64-ubuntu1404-3.2.22/</code></p>
+<h4 id="配置环境变量">配置环境变量</h4>
+<p><code>su mongodb</code></p>
+<p><code>vi ~/.bashrc</code></p>
+<p>在最后加入<code>export PATH=/usr/local/mongodb/bin:$PATH</code></p>
+<p><code>source ~/.bashrc</code></p>
+<blockquote>
+<p>验证方法<code>echo $PATH</code>，看有没有<code>/usr/local/mongodb/bin</code></p>
+</blockquote>
+<h4 id="创建数据库目录">创建数据库目录</h4>
+<p><code>mkdir -p /data/db</code></p>
+<p>把<code>/data/db</code>目录的权限分配给mongodb用户:<code>sudo chown -R mongodb /data/db</code></p>
+<h4 id="开启mongodb服务">开启MongoDB服务</h4>
+<p><code>cd /usr/local/mongodb/bin</code></p>
+<p><code>./mongod --rest</code></p>
+<p>显示"waiting for connections on port 27017"表示数据库已经启动，需要新开一个窗口再使用，如下图所示 <img data-src="https://i.loli.net/2019/01/19/5c42ff96bd67f.jpg" /></p>
+<h4 id="进入shell">进入Shell</h4>
+<p>新开一个窗口</p>
+<p><code>su mongodb</code></p>
+<p>输入<code>mongo</code> <img data-src="https://i.loli.net/2019/01/19/5c42ffcee076a.jpg" /></p>
+<p>访问自带的HTTP用户界面：'http://202.204.62.229:28017'</p>
+<p>创建root用户</p>
+<p>在MongoDB的命令行中： &gt; 参考链接：https://www.jianshu.com/p/33e3940db2b2 1. <code>use admin</code> 2. <code>db.createUser(&#123;user:"root", pwd: "admin", roles: ["root"]&#125;)</code> 3. <code>use admin</code> 4. <code>db.createUser(&#123;user:"admin", pwd:"admin", roles: [&#123;role:"userAdminAnyDatabase", db:"admin"&#125;]&#125;)</code> 5. <code>use nfca_db</code> //该命令也是创建数据库的命令 6. <code>db.createUser(&#123;user:"nfca", pwd:"nfca", roles:["readWrite", "dbAdmin"]&#125;)</code> 7. <code>db.auth('nfca', 'nfca')</code> 8. <code>use nfca_db</code> 9. <code>db.createCollection("runoob")</code> 10. <code>ctrl+c</code>退出MongoDB 11. <code>vi /usr/local/mongodb/mongodb.conf</code>（如果没有，会自动新建）</p>
+<pre><code>写入 `auth=true`
+
+`:wq`保存</code></pre>
+<ol start="12" type="1">
+<li>开启MongoDB，<code>sudo /usr/local/mongodb/bin/mongod --config /usr/local/mongodb/mongodb.conf --rest</code></li>
+</ol>
+<h4 id="保存镜像">保存镜像</h4>
+<p><code>docker commit -m "mongodb installed" 4f8e ubuntu:mongodb</code></p>
+<h4 id="关闭mongodb">关闭mongodb</h4>
+<p><code>mongod  --shutdown</code></p>
+<h4 id="容器更新后-保存镜像">容器更新后， 保存镜像</h4>
+<p><code>docker commit -m "update" 6e2b ubuntu:mongodb</code></p>
+<h4 id="新建容器时自动开启mongodb">新建容器时，自动开启mongodb</h4>
+<p>想在Docker容器启动时执行脚本命令，本来想在<code>/etc/rc.local</code>中加命令，但发现无效，原来docker容器启动时并不执行<code>/etc/rc.local</code>，这个太内核了，因此就需要找别的办法。如下：</p>
+<blockquote>
+<p>首先注意: 只能在run的时候设置启动时执行脚本，之后start和restart也会自动执行<br />
+但是无法在start或者restart时再设置，只能在run的时候设置</p>
+</blockquote>
+<h5 id="准备脚本">准备脚本</h5>
+<p>首先run一个容器，在容器里面某个路径新建sh脚本，比如在<code>/home/mongodb/</code>中新建<code>start_mongodb.sh</code>脚本</p>
+<p>脚本内容 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo /usr/local/mongodb/bin/mongod --config /usr/local/mongodb/mongodb.conf --rest</span><br></pre></td></tr></table></figure></p>
+<h5 id="生成容器为镜像">生成容器为镜像</h5>
+<p><code>docker commit -m 'auto start mongodb' 6e2b ubuntu:mongodb</code></p>
+<h5 id="生成能自动执行脚本的容器">生成能自动执行脚本的容器</h5>
+<p><code>docker run -itd -p 27017:27017 -p 28017:28017 ubuntu:mongodb /bin/bash /home/mongodb/start_mongodb.sh</code></p>
+<p>和一般生成容器相比，多了：<code>/bin/bash /home/mongodb/start_mongodb.sh</code></p>
+]]></content>
+      <categories>
+        <category>MongoDB</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>MongoDB</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MongoDB相关问题</title>
+    <url>/2019/01/20/MongoDB%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h1 id="问题一">问题一</h1>
+<h4 id="问题描述">问题描述</h4>
+<p>MongoDB中的几种权限</p>
+<h4 id="解决方案">解决方案</h4>
+<p>角色安全权限访问控制：</p>
+<p>Read：允许用户读取指定数据库</p>
+<p>readWrite：允许用户读写指定数据库</p>
+<span id="more"></span>
+<p>dbAdmin：允许用户在指定数据库中执行管理函数，如索引创建、删除，查看统计或访问system.profile</p>
+<p>userAdmin：允许用户向system.users集合写入，可以找指定数据库里创建、删除和管理用户</p>
+<p>clusterAdmin：只在admin数据库中可用，赋予用户所有分片和复制集相关函数的管理权限。</p>
+<p>readAnyDatabase：只在admin数据库中可用，赋予用户所有数据库的读权限</p>
+<p>readWriteAnyDatabase：只在admin数据库中可用，赋予用户所有数据库的读写权限</p>
+<p>userAdminAnyDatabase：只在admin数据库中可用，赋予用户所有数据库的userAdmin权限</p>
+<p>dbAdminAnyDatabase：只在admin数据库中可用，赋予用户所有数据库的dbAdmin权限。</p>
+<p>root：只在admin数据库中可用。超级账号，超级权限</p>
+<h4 id="参考网址">参考网址</h4>
+<blockquote>
+<p>https://blog.csdn.net/zmx729618/article/details/52091804 https://www.2cto.com/database/201507/420854.html</p>
+</blockquote>
+<h1 id="问题二">问题二</h1>
+<h4 id="问题描述-1">问题描述</h4>
+<p>出现'Unclean full-time diagnostic data capture shutdown detected, found interim file, some metrics may have been lost.'</p>
+<h4 id="解决方案-1">解决方案</h4>
+<p><code>rm -f /var/lib/mongo/diagnostic.data/*</code></p>
+<h1 id="问题三">问题三</h1>
+<h4 id="问题描述-2">问题描述</h4>
+<p>错误提示：</p>
+<p>'listen(): bind() failed errno:98 Address already in use for socket: 0.0.0.0:27017' 'addr already in use'</p>
+<h4 id="解决方案-2">解决方案</h4>
+<p><code>ps aux | grep mongod</code></p>
+<p>找到对应进程id,杀死:</p>
+<p><code>kill -9 pid</code></p>
+<p>如下图： <img data-src="https://i.loli.net/2019/01/20/5c447f42b9786.jpg" /></p>
+<h4 id="参考网址-1">参考网址</h4>
+<blockquote>
+<p>https://www.cnblogs.com/wjw-blog/p/5995237.html</p>
+</blockquote>
+<h1 id="问题四">问题四</h1>
+<h4 id="问题描述-3">问题描述</h4>
+<p>后端对数据排序、分页时报错：</p>
+<p><code>pymongo.errors.OperationFailure: Executor error during find command :: caused by :: Sort operation used more than the maximum 33554432 bytes of RAM. Add an index, or specify a smaller limit.</code></p>
+<p>按照错误提示，知道这是排序的时候报的错，因为 mongo 的 sort 操作是在内存中操作的，必然会占据内存，同时mongo 内的一个机制限制排序时最大内存为 32M，当排序的数据量超过 32M,就会报上面的这个错，解决办法就像上面提示的意思：</p>
+<p>一是加大 mongo的排序内存，这个一般是运维来管，也有弊端，就是数据量如果再大，还要往上加。</p>
+<p>另一个办法就是加索引，这个方法还是挺方便的。创建索引及时生效，不需要重启服务。</p>
+<h4 id="解决方案-3">解决方案</h4>
+<p>创建索引：</p>
+<ol type="1">
+<li><code>db.你的collection.createIndex(&#123;"你的字段": -1&#125;)</code>，此处 -1 代表倒序，1 代表正序</li>
+<li><code>db.你的collecton.getIndexes()</code></li>
+</ol>
+<p>实际操作：</p>
+<ol type="1">
+<li>按时间索引，且倒序，最新的在最前面：<code>db.gms_monitor.createIndex(&#123;time:-1&#125;)</code></li>
+<li>查询gms_monitor表的索引：<code>db.gms_monitor.getIndexes()</code></li>
+</ol>
+<h4 id="参考网址-2">参考网址</h4>
+<blockquote>
+<p>https://blog.csdn.net/kdc18333608478/article/details/74635838 https://blog.csdn.net/zzq900503/article/details/78666865</p>
+</blockquote>
+<h1 id="定时删除数据">定时删除数据</h1>
+<p><code>db.gms_monitor.createIndex(&#123;"time":1&#125;, &#123;expireAfterSeconds: 7776000&#125;)</code></p>
+<p>gms_monitor:collection名 time:字段名 7776000:有效时间（秒）</p>
+]]></content>
+      <categories>
+        <category>MongoDB</category>
+      </categories>
+      <tags>
+        <tag>MongoDB</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MongoDB自动删除指定时间之前的数据</title>
+    <url>/2020/10/08/MongoDB%E8%87%AA%E5%8A%A8%E5%88%A0%E9%99%A4%E6%8C%87%E5%AE%9A%E6%97%B6%E9%97%B4%E4%B9%8B%E5%89%8D%E7%9A%84%E6%95%B0%E6%8D%AE/</url>
+    <content><![CDATA[<blockquote>
+<p>参考链接：<br />
+https://www.jb51.net/article/150243.htm<br />
+https://docs.mongodb.com/v3.2/core/index-ttl/</p>
+</blockquote>
+<p><code>db.gms_monitor.createIndex(&#123;"time": -1 &#125;, &#123; expireAfterSeconds: 90*24*60*60 &#125;)</code></p>
+<blockquote>
+<p>注：90天*24小时*60分钟*60秒 <span id="more"></span> <img data-src="https://i.loli.net/2020/10/08/jlLFBeg47ho8ZSv.png" alt="image.png" /></p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>MongoDB</category>
+      </categories>
+      <tags>
+        <tag>MongoDB</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>NFCA-编写Dockerfile，自动执行脚本</title>
+    <url>/2021/04/15/NFCA-%E7%BC%96%E5%86%99Dockerfile%EF%BC%8C%E8%87%AA%E5%8A%A8%E6%89%A7%E8%A1%8C%E8%84%9A%E6%9C%AC/</url>
+    <content><![CDATA[<h1 id="分步进行">分步进行</h1>
+<ol type="1">
+<li><code>cd nfcadb</code></li>
+<li><code>tar -czvf nfcadb.tar.gz *</code></li>
+<li>编写buffer_to_mongodb.sh <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;!--cd /opt/nfcadb/--&gt;</span><br><span class="line">&lt;!--tar -zxvf nfcadb.tar.gz--&gt;</span><br><span class="line">&lt;!--cd /opt/nfcadb/buffer_to_nfcadb--&gt;</span><br><span class="line">&lt;!--python3 data_import.py --mode nfca--&gt;</span><br><span class="line"></span><br><span class="line">&lt;!--20210522更新--&gt;</span><br><span class="line">cd /opt/nfcadb/buffer_to_nfcadb</span><br><span class="line">python3 data_import.py --mode nfca</span><br></pre></td></tr></table></figure></li>
+</ol>
+<span id="more"></span>
+<ol start="4" type="1">
+<li>编写Dokcerfile <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;!--FROM python:3.6-slim-buster--&gt;</span><br><span class="line">&lt;!--COPY ./nfcadb.tar.gz /opt/nfcadb/--&gt;</span><br><span class="line">&lt;!--COPY ./buffer_to_mongodb.sh /opt/--&gt;</span><br><span class="line">&lt;!--RUN pip3 install --upgrade pip \--&gt;</span><br><span class="line">&lt;!--    &amp;&amp; pip3 install numpy pymysql pyyaml pymongo influxdb_client--&gt;</span><br><span class="line"></span><br><span class="line">&lt;!--CMD [&quot;sh&quot;, &quot;/opt/buffer_to_mongodb.sh&quot;]--&gt;</span><br><span class="line"></span><br><span class="line">&lt;!--20210522更新--&gt;</span><br><span class="line">FROM python:3.6-slim-buster</span><br><span class="line">COPY ./nfcadb.tar.gz /opt/nfcadb/</span><br><span class="line">COPY ./buffer_to_mongodb.sh /opt/</span><br><span class="line">RUN pip3 install --upgrade pip \</span><br><span class="line">    &amp;&amp; pip3 install numpy pymysql pyyaml pymongo influxdb_client</span><br><span class="line"></span><br><span class="line">CMD [&quot;sh&quot;, &quot;/opt/nfcadb/buffer_to_mongodb.sh&quot;]</span><br></pre></td></tr></table></figure></li>
+<li><code>docker build -t buffer_to_mongodb:v0 .</code></li>
+<li><code>docker run -itd --name buff_to_mongo buffer_to_mongodb:v0</code></li>
+<li>查看实时docker容器日志<code>docker logs -f buff_to_mongo</code></li>
+<li>访问网站<code>http://159.138.163.117:16005</code>，可视化查看容器日志</li>
+</ol>
+<h1 id="编写sh脚本">编写sh脚本</h1>
+<ol type="1">
+<li><p>编写脚本： <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">docker stop buff_to_mongo</span><br><span class="line">docker rm buff_to_mongo</span><br><span class="line">docker build -t buffer_to_mongodb:v0 .</span><br><span class="line">docker run -itd --name buff_to_mongo -v /home/nfca-admin/nfcadb/:/opt/nfcadb/ buffer_to_mongodb:v0</span><br></pre></td></tr></table></figure></p></li>
+<li><p><code>sudo sh ~/nfcadb/update_buff_to_mongo_image.sh</code></p></li>
+<li><p>查看实时docker容器日志<code>docker logs -f buff_to_mongo</code></p></li>
+<li><p>访问网站<code>http://159.138.163.117:16005</code>，可视化查看容器日志</p></li>
+</ol>
+]]></content>
+      <categories>
+        <category>Docker</category>
+        <category>NFCA</category>
+        <category>Dockerfile</category>
+      </categories>
+      <tags>
+        <tag>Docker</tag>
+        <tag>Dockerfile</tag>
+        <tag>NFCA</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python-pip换源，永久</title>
+    <url>/2019/07/02/Python-pip%E6%8D%A2%E6%BA%90%EF%BC%8C%E6%B0%B8%E4%B9%85/</url>
+    <content><![CDATA[<h1 id="更换pip源到国内镜像">更换pip源到国内镜像</h1>
+<h2 id="pip国内的一些镜像">pip国内的一些镜像</h2>
+<ul>
+<li>清华大学 https://pypi.tuna.tsinghua.edu.cn/simple/</li>
+<li>豆瓣(douban) http://pypi.douban.com/simple/</li>
+<li>阿里云 https://mirrors.aliyun.com/pypi/simple/</li>
+<li>中国科技大学 https://pypi.mirrors.ustc.edu.cn/simple/</li>
+<li>中国科学技术大学 http://pypi.mirrors.ustc.edu.cn/simple/</li>
+</ul>
+<h2 id="修改源方法">修改源方法</h2>
+<h3 id="临时使用">临时使用</h3>
+<p>可以在使用pip的时候在后面加上-i参数，指定pip源 eg: pip install scrapy -i https://pypi.tuna.tsinghua.edu.cn/simple</p>
+<h3 id="永久修改">永久修改</h3>
+<h4 id="linux">linux:</h4>
+<p>修改 ~/.pip/pip.conf (没有就创建一个)， 内容如下：</p>
+<p>[global]</p>
+<p>index-url = https://pypi.tuna.tsinghua.edu.cn/simple</p>
+<h4 id="windows">windows:</h4>
+<p>直接在user目录中创建一个pip目录，如：C:，新建文件pip.ini，内容如下</p>
+<p>[global]</p>
+<p>index-url = https://pypi.tuna.tsinghua.edu.cn/simple</p>
+<hr />
+<p>作者：linux凯 来源：CSDN 原文：https://blog.csdn.net/chenghuikai/article/details/55258957 版权声明：本文为博主原创文章，转载请附上博文链接！</p>
+]]></content>
+      <categories>
+        <category>Python</category>
+        <category>pip</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>pip</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python版本共存</title>
+    <url>/2018/12/27/Python%E7%89%88%E6%9C%AC%E5%85%B1%E5%AD%98/</url>
+    <content><![CDATA[<ol type="1">
+<li>https://blog.csdn.net/qiang12qiang12/article/details/53239734</li>
+<li>https://blog.csdn.net/qiang12qiang12/article/details/53239866</li>
+</ol>
+<p>进入CMD：</p>
+<ul>
+<li>输入<code>python</code>进入Pyhton3.6</li>
+<li>输入<code>python2</code>进入Pyhton2.7</li>
+</ul>
+<p>注意： + <code>pip</code>默认为pip3，安装在<code>c:\users\admin\anaconda3\lib\site-packages</code>里面 + 如果要在Python2.7的虚拟环境里安装包，请使用<code>pip2</code>s</p>
+]]></content>
+      <categories>
+        <category>Python</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Tenda-U3无线网卡安装及使用指南-Linux</title>
+    <url>/2020/01/17/Tenda-U3%E6%97%A0%E7%BA%BF%E7%BD%91%E5%8D%A1%E5%AE%89%E8%A3%85%E5%8F%8A%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97-Linux/</url>
+    <content><![CDATA[<blockquote>
+<p>参考链接：https://www.tenda.com.cn/faq/9209.html</p>
+</blockquote>
+<h1 id="下载驱动">下载驱动</h1>
+<blockquote>
+<p>驱动下载网址：<code>tenda.com.cn/default.html</code><br />
+智能家用产品-无线网卡-U3-下载-U3网卡驱动（Linux）-立即下载</p>
+</blockquote>
+<p>得到驱动安装包<code>Linux_(kernel 2.6.24-4.17).zip</code></p>
+<h1 id="移动驱动到liunx主机上">移动驱动到Liunx主机上</h1>
+<p>用WinScp或其他方式，只要复制到Linux主机上就行</p>
+<span id="more"></span>
+<p>本文档示例复制位置：<code>/home/afish/tenda/</code>(在自己那台134服务器上)</p>
+<h1 id="插入u3无线网卡">插入U3无线网卡</h1>
+<p>将U3无线网卡插在电脑可用的USB接口上</p>
+<h1 id="解压驱动安装包">解压驱动安装包</h1>
+<ul>
+<li><code>cd /home/afish/tenda/</code></li>
+<li><code>unzip Linux_(kernel 2.6.24-4.17).zip</code></li>
+</ul>
+<h1 id="安装驱动">安装驱动</h1>
+<ul>
+<li><code>cd RTL8192EU_linux_v5.6.4_35685_COEX20171113-0047.20191108/</code></li>
+<li><code>su</code>(切换到root用户)</li>
+<li><code>输入root用户的密码</code></li>
+<li><code>sh install.sh</code></li>
+</ul>
+<p>等待安装完成</p>
+<h1 id="测试wifi连接">测试WiFi连接</h1>
+<p>连接WiFi试一试，看能否连接成功</p>
+<h1 id="注意事项">注意事项</h1>
+<p>注意：电脑重启后需要<strong>重新插拔</strong>u3无线网卡，不然会一直显示在连接网络，也就是一直转圈圈，但不会连接成功</p>
+]]></content>
+      <categories>
+        <category>Tenda</category>
+        <category>无线网卡</category>
+      </categories>
+      <tags>
+        <tag>Tenda</tag>
+        <tag>无线网卡</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu安装配置socket5代理服务dante-server</title>
+    <url>/2020/01/12/Ubuntu%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEsocket5%E4%BB%A3%E7%90%86%E6%9C%8D%E5%8A%A1dante-server/</url>
+    <content><![CDATA[<blockquote>
+<p>服务器：宿舍的虚拟机10.13.157.19</p>
+</blockquote>
+<h1 id="安装">安装</h1>
+<p>安装比较容易，直接执行：</p>
+<p><code>sudo apt-get install dante-server</code></p>
+<h1 id="创建代理用户">创建代理用户</h1>
+<h2 id="创建组">创建组</h2>
+<p><code>groupadd proxy</code></p>
+<span id="more"></span>
+<p>注意：系统可能已经存在proxy组，就不用再创建了 ## 创建用户 <code>useradd ss5 -g proxy</code> ## 设置密码 <code>passwd ss5</code></p>
+<p><code>ss5</code> ## 禁止ss5登录（为了安全） <code>vi /etc/passwd</code></p>
+<p>在ss5用户那行后增加:<code>/bin/false</code></p>
+<h1 id="配置">配置</h1>
+<p>安装完毕后，有个配置文件：/etc/danted.conf，配置文件内容就是配置说明，建议好好阅读。</p>
+<p><code>cp /etc/danted.conf /etc/danted.conf.bak</code>。</p>
+<p>可参考：官方文档 https://www.inet.no/dante/doc/latest/config/index.html，然后编辑配置文件：</p>
+<p><code>sudo vi /etc/danted.conf</code></p>
+<p>连接代理，需要有用户名密码的配置如下： <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">logoutput: /var/log/sockd.log</span><br><span class="line">internal: ens33 port = 65522</span><br><span class="line">external: ens33</span><br><span class="line">method: username</span><br><span class="line">clientmethod: none</span><br><span class="line">user.privileged: root</span><br><span class="line">user.notprivileged: ss5</span><br><span class="line">user.libwrap: nobody</span><br><span class="line">compatibility: sameport</span><br><span class="line">compatibility: reuseaddr</span><br><span class="line">extension: bind</span><br><span class="line">client pass &#123;</span><br><span class="line">    from: 0.0.0.0/0 to: 0.0.0.0/0</span><br><span class="line">&#125;</span><br><span class="line">pass &#123;</span><br><span class="line">    from: 0.0.0.0/0 to: 0.0.0.0/0</span><br><span class="line">    protocol: tcp</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 连接代理，不需要用户名密码的配置如下： <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">logoutput: /var/log/sockd.log</span><br><span class="line">internal: ens33 port = 65522</span><br><span class="line">external: ens33</span><br><span class="line">method: none</span><br><span class="line">clientmethod: none</span><br><span class="line">user.privileged: root</span><br><span class="line">user.notprivileged: ss5</span><br><span class="line">user.libwrap: nobody</span><br><span class="line">compatibility: sameport</span><br><span class="line">compatibility: reuseaddr</span><br><span class="line">extension: bind</span><br><span class="line">client pass &#123;</span><br><span class="line">    from: 0.0.0.0/0 to: 0.0.0.0/0</span><br><span class="line">&#125;</span><br><span class="line">pass &#123;</span><br><span class="line">    from: 0.0.0.0/0 to: 0.0.0.0/0</span><br><span class="line">    protocol: tcp</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="启动服务">启动服务</h1>
+<p><code>sudo /etc/init.d/danted start</code></p>
+<h1 id="查看服务是否监听">查看服务是否监听</h1>
+<p><code>sudo netstat -anp | grep 65522</code></p>
+<h1 id="用proxifier-连接可以连接成功">用Proxifier 连接可以连接成功</h1>
+<h1 id="重启服务">重启服务</h1>
+<p><code>/etc/init.d/danted restart</code> 总结：</p>
+<p>查看端口占用情况，可以用命令： sudo lsof -i:端口号</p>
+<p>查看iptables规则：sudo iptables -nvL</p>
+<p>查看某端口是否开放，可以用telnet ip 端口号查看，比如：</p>
+<p>telnet 127.0.0.1 80</p>
+<p>当时配置有问题，telnet后，提示：</p>
+<p>Escape character is '^]'.——说明telnet成功了</p>
+<p>Connection closed by foreign host.——说明：成功后立刻被外界切断了，请求被拦截，可能配置问题</p>
+<p>于是，再次阅读配置说明，找到配置问题，修改就可以连接。</p>
+<h1 id="参考资料">参考资料：</h1>
+<blockquote>
+<p>https://www.jianshu.com/p/9ccd2cc347d4 https://blog.csdn.net/chenweilong20/article/details/86540005</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Linux</category>
+        <category>网络代理</category>
+        <category>socks5</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>网络代理</tag>
+        <tag>socks5</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Visual Studio Code(VSCode)下的通用C语言环境搭建</title>
+    <url>/2020/09/11/VSCode%E4%B8%8B%E7%9A%84%E9%80%9A%E7%94%A8C%E8%AF%AD%E8%A8%80%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</url>
+    <content><![CDATA[<blockquote>
+<p>版权声明：本文为博主原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明。<br />
+本文链接：https://www.cnblogs.com/czlhxm/p/11794743.html<br />
+参考博客：整理：Visual Studio Code (vscode) 配置C、C++环境/编写运行C、C++（主要Windows、简要Linux）</p>
+</blockquote>
+<h1 id="主要流程">主要流程</h1>
+<ol type="1">
+<li>vscode的下载与简单配置</li>
+<li>MinGw的下载与安装</li>
+<li>配置系统环境变量</li>
+<li>修改vscode调试配置文件</li>
+<li>vscode下开发C项目的使用细节</li>
+<li>通用的C语言debug方法</li>
+<li>常见问题与解决方案(不定时更新)</li>
+</ol>
+<span id="more"></span>
+<h1 id="vscode的下载与简单配置">1.vscode的下载与简单配置</h1>
+<p>https://code.visualstudio.com/Download</p>
+<h1 id="mingw的下载与安装">2.MinGw的下载与安装</h1>
+<p>因为windows下vscode不直接具备对于C语言的编译调试工具，所以要下载集成gcc等工具的MinGw以提供扩展支持。</p>
+<p>https://sourceforge.net/projects/mingw-w64/files/</p>
+<p>下载：<code>x86_64-posix-seh</code></p>
+<figure>
+<img data-src="https://i.loli.net/2020/09/11/LvHFOyNeXtiBSZx.png" alt="image.png" /><figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<p>将压缩包内的<code>mingw64</code>，解压出来到<code>C:\Program Files (x86)</code>，并重命名<code>MinGW</code></p>
+<h1 id="配置系统环境变量path">3.配置系统环境变量Path</h1>
+<p>打开我的电脑-属性-高级系统设置-高级-环境变量 以下配置均为<strong><em>系统变量 !!!</em></strong> + 在Path变量中，增加<code>C:\Program Files (x86)\MinGW\bin</code></p>
+<p><img data-src="https://i.loli.net/2020/09/11/MkLKrJnyvpgFW3u.png" alt="image.png" /> + 新加INCLUDE变量，值为<code>C:\Program Files (x86)\MinGW\include</code></p>
+<figure>
+<img data-src="https://i.loli.net/2020/09/11/MGQSZ4hI9LEczHb.png" alt="image.png" /><figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<p>完成后，全部确定，关闭环境变量设置窗口，按win+r键打开运行，输入cmd回车后，可在控制台下输入gcc -v查看当前计算机mingw是否安装成功</p>
+<figure>
+<img data-src="https://i.loli.net/2020/09/11/Xl6W8pBMTcqJoay.png" alt="image.png" /><figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<h1 id="修改vscode调试配置文件">4.修改vscode调试配置文件</h1>
+<p>重启vscode，安装两个扩展： + C/C++ <img data-src="https://i.loli.net/2020/09/11/ElgD2YS7a1uqAx5.png" alt="image.png" /> + Code Runner <img data-src="https://i.loli.net/2020/09/11/wlRa6ZmkeUx7YHz.png" alt="image.png" /> 配置Code Runner，勾选这两个： <img data-src="https://i.loli.net/2020/09/11/KT4fIOxpQN7J5bz.png" alt="image.png" /></p>
+<p>写一个hello world!程序，并点击右上角箭头，看是否成功运行，vscode下方终端是否有程序运行结果</p>
+<figure>
+<img data-src="https://i.loli.net/2020/09/11/alOMEf3dtzjSFPY.png" alt="image.png" /><figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<figure>
+<img data-src="https://i.loli.net/2020/09/11/W1LpMIteQKcJdzE.png" alt="image.png" /><figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<p>接下来配置C/C++ debuger</p>
+<p>在之前新建的文件夹下再新建一个名为.vscode的文件夹，新建一个launch.json文件，输入： <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;version&quot;: &quot;0.2.0&quot;,  </span><br><span class="line">    &quot;configurations&quot;: [  </span><br><span class="line">        &#123;  </span><br><span class="line">            &quot;name&quot;: &quot;(gdb) Launch&quot;, // 配置名称，将会在启动配置的下拉菜单中显示</span><br><span class="line">            &quot;type&quot;: &quot;cppdbg&quot;,       // 配置类型，这里只能为cppdbg</span><br><span class="line">            &quot;request&quot;: &quot;launch&quot;,    // 请求配置类型，可以为launch（启动）或attach（附加）  </span><br><span class="line">            &quot;program&quot;: &quot;$&#123;workspaceFolder&#125;/$&#123;fileBasenameNoExtension&#125;.exe&quot;,// 将要进行调试的程序的路径  </span><br><span class="line">            &quot;args&quot;: [],             // 程序调试时传递给程序的命令行参数，一般设为空即可  </span><br><span class="line">            &quot;stopAtEntry&quot;: false,   // 设为true时程序将暂停在程序入口处，一般设置为false  </span><br><span class="line">            &quot;cwd&quot;: &quot;$&#123;workspaceFolder&#125;&quot;, // 调试程序时的工作目录，一般为$&#123;workspaceFolder&#125;即代码所在目录  </span><br><span class="line">            &quot;environment&quot;: [],  </span><br><span class="line">            &quot;externalConsole&quot;: true, // 调试时是否显示控制台窗口，一般设置为true显示控制台  </span><br><span class="line">            &quot;MIMode&quot;: &quot;gdb&quot;,  </span><br><span class="line">            &quot;miDebuggerPath&quot;: &quot;C:\\Program Files (x86)\\MinGW\\bin\\gdb.exe&quot;, // miDebugger的路径，注意这里要与MinGw的路径对应  </span><br><span class="line">            &quot;preLaunchTask&quot;: &quot;gcc&quot;, // 调试会话开始前执行的任务，一般为编译程序，c++为g++, c为gcc  </span><br><span class="line">            &quot;setupCommands&quot;: [  </span><br><span class="line">                &#123;   </span><br><span class="line">            &quot;description&quot;: &quot;Enable pretty-printing for gdb&quot;,  </span><br><span class="line">                    &quot;text&quot;: &quot;-enable-pretty-printing&quot;,  </span><br><span class="line">                    &quot;ignoreFailures&quot;: true  </span><br><span class="line">                &#125;  </span><br><span class="line">            ]  </span><br><span class="line">        &#125;  </span><br><span class="line">    ]  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>注意这里"miDebuggerPath": "D:\Install\bin\gdb.exe"将其值改成自己所解压的mingw.exe的路径</p>
+<p>其他设置可看情况修改</p>
+<p>再新建tasks.json文件，输入： <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;version&quot;: &quot;2.0.0&quot;,</span><br><span class="line">    &quot;command&quot;: &quot;gcc&quot;,</span><br><span class="line">    &quot;args&quot;: [&quot;-g&quot;,&quot;$&#123;file&#125;&quot;,&quot;-o&quot;,&quot;$&#123;fileBasenameNoExtension&#125;.exe&quot;],    // 编译命令参数</span><br><span class="line">    &quot;problemMatcher&quot;: &#123;</span><br><span class="line">        &quot;owner&quot;: &quot;cpp&quot;,</span><br><span class="line">        &quot;fileLocation&quot;: [&quot;relative&quot;, &quot;$&#123;workspaceFolder&#125;&quot;],</span><br><span class="line">        &quot;pattern&quot;: &#123;</span><br><span class="line">            &quot;regexp&quot;: &quot;^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$&quot;,</span><br><span class="line">            &quot;file&quot;: 1,</span><br><span class="line">            &quot;line&quot;: 2,</span><br><span class="line">            &quot;column&quot;: 3,</span><br><span class="line">            &quot;severity&quot;: 4,</span><br><span class="line">            &quot;message&quot;: 5</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>注意这里的"command": "gcc"要与launch.json中的"preLaunchTask": "gcc"对应，即都为gcc或都为g++</p>
+<p>保存后，回到最初的C代码文件，菜单-调试-启动调试(快捷键F5)，即可成功运行C程序！</p>
+<figure>
+<img data-src="https://i.loli.net/2020/09/11/8aqw534hpHvzV2c.png" alt="image.png" /><figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<h1 id="vscode下开发c项目的使用细节">5.vscode下开发C项目的使用细节</h1>
+<p>对于通常情况下，可将上述完成的.vscode文件夹放在C代码保存的大目录下，该目录下的所有C文件在vscode下调试都将适用该配置文件夹。</p>
+<p>注意，在不含上述.vscode文件夹的C程序都无法直接调试！需要重新配置。(或者将配置好的.vscode文件夹复制到该程序所在目录下)</p>
+<p>正在编辑过程中，要充分利用vscode的资源管理器，菜单-文件-打开文件夹/打开工作区的方式打开一个含.vscode文件夹的目录，可进行调试。</p>
+<p>对于不需要调试的C程序，可利用预装好code runner(装好后窗口右上角会多出一排按钮)直接点击编译运行，在下方终端中可进行数据的输入与输出。</p>
+<p>注意在调试方法下运行C程序，需在return前下断点或中断函数等方法使程序到执行出口前停下，否则可能会出现预料之内的闪退。</p>
+<h1 id="通用的c语言debug方法">6.通用的C语言debug方法</h1>
+<p>vscode下的调试工具非常方便，对于需要调试的代码，可在对应行的行数前鼠标左键单击，即可下断点，右键断点，可对断点进行简单管理，如禁用或修改为逻辑断点</p>
+<figure>
+<img data-src="https://i.loli.net/2020/09/11/TPeYJjgiVcwfWMm.png" alt="image.png" /><figcaption aria-hidden="true">image.png</figcaption>
+</figure>
+<p>常用快捷键下的调试： + F5进入调试 + F10单步跳过 + F11单步执行(可进入执行函数体) + Shift+F5停止调试 + Ctrl+Shift+F5重启调试</p>
+<p>对于调试异常终止，若不能正常重新启动调试的，重启vscode试试</p>
+<p>若上述操作存在无响应的，试试万能的以管理员方式启动大法。</p>
+<h1 id="常见问题与解决方案不定时更新">7.常见问题与解决方案(不定时更新)</h1>
+<p>对于程序中含中文调试程序显示乱码的：右下角-UTF8-通过编码保存-输入gb2312回车</p>
+<p>对于打开程序发现原本应该是中文的乱码的：右下角-UTF8-通过编码重新打开-输入gb2312回车s</p>
+]]></content>
+      <categories>
+        <category>Visual Studio Code</category>
+        <category>C</category>
+      </categories>
+      <tags>
+        <tag>Visual Studio Code</tag>
+        <tag>C</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>WinSCP使用root用户连接服务器</title>
+    <url>/2018/11/29/WinSCP%E4%BD%BF%E7%94%A8root%E7%94%A8%E6%88%B7%E8%BF%9E%E6%8E%A5%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
+    <content><![CDATA[<h3 id="在202.104.62.145服务器中查看sftp服务在你服务器的路径">1 在202.104.62.145服务器中查看sftp服务在你服务器的路径</h3>
+<p>以root身份输入命令<code>find / -name sftp-server -print</code></p>
+<p>得到路径为<code>/usr/lib/openssh/sftp-server</code></p>
+<h3 id="winscp设置">2 WinSCP设置</h3>
+<ol type="1">
+<li><p>点击'高级'-'SFTP'，在'SFTP服务器'中输入<code>sudo /usr/lib/openssh/sftp-server</code> <span id="more"></span> <img data-src="https://i.loli.net/2018/11/29/5bff8a39b7de3.jpg" /></p></li>
+<li><p>点击'Shell'，在Shell中输入<code>sudo -i</code> <img data-src="https://i.loli.net/2018/11/29/5bff8a7b0c5b9.jpg" /></p></li>
+<li><p>点击'确定'</p></li>
+<li><p>输入用户名<code>root</code></p></li>
+<li><p>输入root用户的密码</p></li>
+<li><p>连接</p></li>
+</ol>
+]]></content>
+      <categories>
+        <category>WinSCP</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>WinSCP</tag>
+        <tag>Root</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Windows下实现ffmpeg+nginx+rtmp+hls实现直播推流拉流（低延时）</title>
+    <url>/2020/08/22/Windows%E4%B8%8B%E5%AE%9E%E7%8E%B0ffmpeg-nginx-rtmp-hls%E5%AE%9E%E7%8E%B0%E7%9B%B4%E6%92%AD%E6%8E%A8%E6%B5%81%E6%8B%89%E6%B5%81%EF%BC%88%E4%BD%8E%E5%BB%B6%E6%97%B6%EF%BC%89/</url>
+    <content><![CDATA[<blockquote>
+<p>参考链接<br />
+https://blog.csdn.net/u011925282/article/details/102580420 https://blog.csdn.net/eguid_1/article/details/83000705 https://zhuanlan.zhihu.com/p/136959101 https://blog.csdn.net/u014552102/article/details/103302731 https://www.cnblogs.com/tocy/p/using-ffmpeg-build-hls-live-system.html https://blog.csdn.net/ai2000ai/article/details/80756892</p>
+</blockquote>
+<h4 id="额外补充">额外补充</h4>
+<p>显示所有摄像头名称：<code>ffmpeg -list_devices true -f dshow -i dummy</code></p>
+<span id="more"></span>
+<h3 id="用于摄像头的rtmp推流需要浏览器flash支持另外目前有黑屏问题能看到网卡有数据流但黑屏">用于摄像头的rtmp推流（需要浏览器flash支持，另外目前有黑屏问题，能看到网卡有数据流，但黑屏）</h3>
+<p><code>ffmpeg -f dshow -i video="摄像头名称" -vcodec libx264 -preset:v ultrafast -tune:v zerolatency -f flv rtmp://127.0.0.1:1935/live/home</code></p>
+<p>我的：<code>ffmpeg -f dshow -i video="Daheng Imaging Device 1" -vcodec libx264 -preset:v ultrafast -tune:v zerolatency -f flv rtmp://127.0.0.1:1935/live/home</code></p>
+<p><code>ffmpeg -rtbufsize 50000 -f dshow -i video="Daheng Imaging Device 1" -vcodec libx264 -preset:v ultrafast -tune:v zerolatency -f flv rtmp://127.0.0.1:1935/live/home</code></p>
+<blockquote>
+<p>'-rtbufsize 50000ffmpeg'：表示缓存设置为50000，（默认缓存:3041280）</p>
+</blockquote>
+<h3 id="用于摄像头的m3u8hls推流不需要浏览器flash支持推荐">用于摄像头的m3u8(hls)推流（不需要浏览器flash支持，推荐）</h3>
+<p><code>ffmpeg -f dshow -i video="Daheng Imaging Device 1" -vcodec libx264 -preset:v ultrafast -tune:v zerolatency -force_key_frames "expr:gte(t,n_forced*1)" -f flv rtmp://127.0.0.1:1935/hls/home</code> &gt; 其中，参数-force_key_frames "expr:gte(t,n_forced*1)"表示强制每1秒一个关键帧</p>
+<p>http访问地址：<code>http://127.0.0.1:8765/hls/home.m3u8</code></p>
+<p>摄像头参数设置： + 图像宽度 1280 + 图像高度 720 + 水平偏移 2108 + 垂直偏移 1476</p>
+<p>湖南卫视 rtmp: <code>rtmp://58.200.131.2:1935/livetv/hunantv</code></p>
+<p>CCTV1 hls: <code>http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8</code></p>
+]]></content>
+      <categories>
+        <category>FFmpeg</category>
+        <category>Windows</category>
+        <category>Nginx</category>
+      </categories>
+      <tags>
+        <tag>FFmpeg</tag>
+        <tag>Windows</tag>
+        <tag>Nginx</tag>
+        <tag>RTMP</tag>
+        <tag>HLS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL的数据从Windows迁移到Linux上</title>
+    <url>/2019/11/09/mysql%E7%9A%84%E6%95%B0%E6%8D%AE%E4%BB%8Ewindows%E8%BF%81%E7%A7%BB%E5%88%B0linuxmysql%20%E4%B8%8A/</url>
+    <content><![CDATA[<p>1.导出数据库 mysqldump -uroot -p 要导出的数据库名子 &gt; 文件名<br />
+2.将生成的数据库文件传到linux的/opt文件下<br />
+3.登陆Linux的数据库<br />
+mysql -uroot -p<br />
+<span id="more"></span> 4.创建与windows同名的数据库<br />
+5.进入到数据库<br />
+use 数据库<br />
+6.迁移数据<br />
+source /opt/filename</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+        <category>Windows</category>
+        <category>MySQL</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Windows</tag>
+        <tag>MySQL</tag>
+        <tag>数据迁移</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>virtualenv-Python创建虚拟环境</title>
+    <url>/2019/07/01/virtualenv-Python%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/</url>
+    <content><![CDATA[<blockquote>
+<p>创建虚拟环境的命令:<br />
+<code>virtualenv E:\PythonProjects\Envs\hbase_env</code></p>
+<p>指定python版本：<br />
+<code>virtualenv -p C:\Python27\python2.exe E:\PythonProjects\Envs\hbase_env</code></p>
+</blockquote>
+<span id="more"></span>
+<ol type="1">
+<li>创建虚拟环境：<code>virtualenv -p C:\Python27\python2.exe E:\PythonProjects\Envs\hbase_env</code></li>
+<li>激活：<code>E:\PythonProjects\Envs\hbase_env\Scripts\activate</code></li>
+<li>执行命令（把pip改成pip2,因为电脑中有两个版本的Python，所以需要这一步）：<code>python2 -m pip install --upgrade pip --force-reinstall</code></li>
+<li>之后安装包可以使用<code>pip</code>或<code>pip2</code></li>
+</ol>
+]]></content>
+      <categories>
+        <category>Python</category>
+        <category>virtualenv</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>virtualenv</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>vue-cli部署到线上nginx，并解决跨域问题</title>
+    <url>/2019/08/25/vue-cli%E9%83%A8%E7%BD%B2%E5%88%B0%E7%BA%BF%E4%B8%8Anginx%EF%BC%8C%E5%B9%B6%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h1 id="vue-cli部署到线上nginx并解决跨域问题">vue-cli部署到线上nginx，并解决跨域问题</h1>
+<h2 id="参考链接">参考链接</h2>
+<blockquote>
+<p>https://blog.csdn.net/qq_33036599/article/details/82789666 https://www.cnblogs.com/web-record/p/9467258.html https://www.cnblogs.com/xiangsj/p/8905648.html</p>
+</blockquote>
+<span id="more"></span>
+<h2 id="把vue项目打包并传到服务器">1 把vue项目打包，并传到服务器</h2>
+<p>在<code>/config/index.js</code>文件里，编辑</p>
+<ul>
+<li><code>assetsPublicPath: './',</code></li>
+<li><code>productionSourceMap: false,</code></li>
+</ul>
+<p>再<code>npm run build</code> 把生成的<code>dist</code>文件夹拷贝到服务器</p>
+<h2 id="配置服务器nginx">2 配置服务器nginx</h2>
+<p>打开配置文件，高鸣飞的服务器中nginx配置文件在<code>/etc/nginx/conf.d</code></p>
+<p>配置文件中加上：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">     # 配置域名和端口</span><br><span class="line">     listen     8080;</span><br><span class="line">     server_name  api.iblue.tech;</span><br><span class="line">     # 配置vue项目的位置</span><br><span class="line">     location / &#123;</span><br><span class="line">         root /home/ubuntu/easy_projects_web/dist/;</span><br><span class="line">     &#125;</span><br><span class="line">     # 配置跨域请求，把/api/的请求都转发到https://api.iblue.tech/api/</span><br><span class="line">     location /api/ &#123;</span><br><span class="line">         add_header &#x27;Access-Control-Allow-Origin&#x27; &#x27;*&#x27;;</span><br><span class="line">         proxy_pass https://api.iblue.tech/api/;</span><br><span class="line">         proxy_set_header Host $http_host;</span><br><span class="line">         proxy_cookie_path /api /;</span><br><span class="line">         proxy_cookie_domain localhost:8080 https://api.iblue.tech/api/;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="重启nginx">重启nginx</h2>
+<p><code>nginx -s reload</code></p>
+<h1 id="后端部署">后端部署</h1>
+<p><code>source ~/easy-env/bin/activate</code></p>
+<p><code>uwsgi --ini ~/easy_projects_server/easy_projects_server.ini</code></p>
+]]></content>
+      <categories>
+        <category>前端开发</category>
+        <category>Nginx</category>
+        <category>Vue</category>
+        <category>Vue-cli</category>
+      </categories>
+      <tags>
+        <tag>Nginx</tag>
+        <tag>前端开发</tag>
+        <tag>Vue</tag>
+        <tag>Vue-cli</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Win10-Win+R改为以管理员运行</title>
+    <url>/2020/01/12/win10%20win+R%E6%94%B9%E4%B8%BA%E4%BB%A5%E7%AE%A1%E7%90%86%E5%91%98%E8%BF%90%E8%A1%8C/</url>
+    <content><![CDATA[<ol type="1">
+<li><code>win+R</code>打开<code>运行</code></li>
+<li>输入<code>gpedit.msc</code></li>
+<li>计算机配置-Windows设置-安全设置--本地策略--安全选项 <span id="more"></span></li>
+<li>"用户账户控制:以管理员批准模式运行所有管理员"---改为"已禁用"</li>
+<li>保存设置</li>
+<li>重启电脑</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Windows</category>
+      </categories>
+      <tags>
+        <tag>Windows</tag>
+        <tag>管理员权限</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>下载暂时走socks5代理</title>
+    <url>/2020/02/28/%E4%B8%8B%E8%BD%BD%E6%9A%82%E6%97%B6%E8%B5%B0socks5%E4%BB%A3%E7%90%86/</url>
+    <content><![CDATA[<p><code>ALL_PROXY=socks5://202.204.54.61:8181 $命令</code></p>
+<h1 id="全局代理写入配置">全局代理，写入配置</h1>
+<p><code>git config --global http.proxy 'socks5://127.0.0.1:1086'</code></p>
+<p><code>git config --global https.proxy 'socks5://127.0.0.1:1086'</code></p>
+<h1 id="清除配置">清除配置</h1>
+<p><code>git config --global --unset http.proxy</code></p>
+<span id="more"></span>
+<p><code>git config --global --unset https.proxy</code></p>
+<h1 id="临时代理">临时代理</h1>
+<p><code>ALL_PROXY=socks5://127.0.0.1:8888 git clone https://github.com/some/one.git</code></p>
+<blockquote>
+<p>作者：谢昆明 链接：https://www.jianshu.com/p/1a1c764661ed 来源：简书 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Linux</category>
+        <category>网络代理</category>
+        <category>socks5</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>网络代理</tag>
+        <tag>socks5</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>删除pip安装缓存</title>
+    <url>/2019/07/02/%E5%88%A0%E9%99%A4pip%E5%AE%89%E8%A3%85%E7%BC%93%E5%AD%98/</url>
+    <content><![CDATA[<h2 id="删除以下路径文件">删除以下路径文件</h2>
+<h3 id="linux-and-unix">Linux and Unix</h3>
+<p><code>~/.cache/pip # and it respects the XDG_CACHE_HOME directory.</code></p>
+<h3 id="os-x">OS X</h3>
+<p><code>~/Library/Caches/pip</code></p>
+<span id="more"></span>
+<h3 id="windows">Windows</h3>
+<p><code>%LocalAppData%\pip\Cache</code></p>
+<hr />
+<p>作者：<strong>HelloWorld</strong> 来源：CSDN 原文：https://blog.csdn.net/kangkanglou/article/details/78955298 版权声明：本文为博主原创文章，转载请附上博文链接！</p>
+]]></content>
+      <categories>
+        <category>Python</category>
+        <category>pip</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>pip</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>利用ImportTsv将csv文件导入到HBase</title>
+    <url>/2018/11/30/%E5%88%A9%E7%94%A8ImportTsv%E5%B0%86csv%E6%96%87%E4%BB%B6%E5%AF%BC%E5%85%A5%E5%88%B0HBase/</url>
+    <content><![CDATA[<p>参考网址： &gt; https://blog.csdn.net/scgaliguodong123_/article/details/46771929</p>
+<hr />
+<h4 id="编写simple.csv文件">编写simple.csv文件</h4>
+<p><code>cd ~</code><br />
+<code>vi simple.csv</code><br />
+加入 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0,&quot;Tony&quot;</span><br><span class="line">1,&quot;Ivy&quot;</span><br><span class="line">2,&quot;Tom&quot;</span><br><span class="line">3,&quot;Spark&quot;</span><br><span class="line">4,&quot;Storm&quot;</span><br></pre></td></tr></table></figure> 保存 <span id="more"></span> #### 把csv文件数据导入HDFS <code>hdfs dfs -mkdir /user</code></p>
+<p><code>hdfs dfs -mkdir /user/hadoop</code></p>
+<p><code>hdfs dfs -put /home/hadoop/simple.csv /user/hadoop</code></p>
+<p>查看<code>hdfs dfs -ls /user/hadoop</code></p>
+<h4 id="创建表">创建表</h4>
+<p>进入hbase shell<code>hbase shell</code></p>
+<p>创建hbase-tb1-001表<code>create 'hbase-tb1-001','cf'</code></p>
+<h4 id="使用map-reduce导入数据到hbase">使用Map Reduce导入数据到HBase</h4>
+<p><code>hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator="," -Dimporttsv.columns=HBASE_ROW_KEY,cf hbase-tb1-001 /user/hadoop/simple.csv</code></p>
+<h4 id="查看结果">查看结果</h4>
+<p>进入hbase shell<code>hbase shell</code></p>
+<p><code>scan 'hbase-tb1-001'</code></p>
+<p>成功截图： <img data-src="https://i.loli.net/2018/11/30/5c0122e19babc.jpg" /></p>
+<h4 id="删除测试用目录">删除测试用目录</h4>
+<p><code>hdfs dfs -rm -r /user/hadoop</code></p>
+<table style="width:6%;">
+<colgroup>
+<col style="width: 5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">### 多列情况</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">### 多列且使用列限定符，即列(columnFamily:columnQualifier)的情况</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><em>除了下两个步骤外，其余步骤与上面一样</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">#### 创建表 进入hbase shell<code>hbase shell</code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">创建hbase-tb1-001表<code>create 'hbase-tb1-003','cf'</code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">#### 使用Map Reduce导入数据到HBase 只要改变Map Reduce的命令即可：</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator="," -Dimporttsv.columns=HBASE_ROW_KEY,cf:cq1,cf:cq2 hbase-tb1-003 /user/hadoop/simple2.csv</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="导入res_0915-0922_copy.csv文件命令">导入<code>res_0915-0922_copy.csv</code>文件命令</h4>
+<p><code>hbase org.apache.hadoop.hbase.mapreduce.ImportTsv -Dimporttsv.separator="," -Dimporttsv.columns=HBASE_ROW_KEY,cf:cqTimestamp,cf:cq1,cf:cq2,cf:cq3,cf:cq4,cf:cq5,cf:cq7,cf:cq8,cf:cq9,cf:cq10,cf:cq11,cf:cq12,cf:cq14,cf:cq15,cf:cq16,cf:cq17,cf:cq18,cf:cq20,cf:cq21,cf:cq22,cf:cq24,cf:cq25,cf:cq27,cf:cq28,cf:cq29,cf:cq30,cf:cq31,cf:cq32,cf:cq33,cf:cq34,cf:cq47,cf:cq49,cf:cq50,cf:cq52,cf:cq53,cf:cq54,cf:cq56,cf:cq57 TestData /user/hadoop/res_0915-0922_copy.csv</code></p>
+<p><img data-src="https://i.loli.net/2018/12/08/5c0b23a0ba999.jpg" /></p>
+<ul>
+<li>z</li>
+<li>a</li>
+<li>z</li>
+<li></li>
+</ul>
+<ol type="1">
+<li>asjkl</li>
+<li>jsdaf</li>
+<li>dasfj</li>
+<li>asdfjlk</li>
+<li></li>
+</ol>
+<p><code>conn = DriverManager.getConnection(url, user, password);</code></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">public Connection getConnection() &#123;</span><br><span class="line">	try &#123;</span><br><span class="line">		Class.forName(className);</span><br><span class="line">		conn = DriverManager.getConnection(url, user, password);</span><br><span class="line">	&#125; catch (ClassNotFoundException e) &#123;</span><br><span class="line">		// TODO Auto-generated catch block</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125; catch (SQLException e) &#123;</span><br><span class="line">		// TODO Auto-generated catch block</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125;</span><br><span class="line">	return conn;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>BigData（大数据）</category>
+        <category>HBase</category>
+      </categories>
+      <tags>
+        <tag>BigData（大数据）</tag>
+        <tag>HBase</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>大恒摄像头网络配置</title>
+    <url>/2021/04/06/%E5%A4%A7%E6%81%92%E6%91%84%E5%83%8F%E5%A4%B4%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<h1 id="软件准备">软件准备</h1>
+<ul>
+<li>系统：Windows</li>
+<li>解压<code>ffmpeg-4.2.2-win64-static.zip</code>和<code>nginx 1.7.11.3 Gryphon.zip</code>，放到D盘</li>
+</ul>
+<h1 id="配置环境变量">配置环境变量</h1>
+<p>在系统环境变量中，配置刚才解压得到的ffmpeg文件夹中的<code>bin/ffmpeg.exe</code></p>
+<span id="more"></span>
+<h1 id="开始网络传输">开始网络传输</h1>
+<ul>
+<li>在D盘新建<code>tmp</code>文件夹，进入<code>tmp</code>，新建<code>hls</code>文件夹</li>
+<li>进入<code>nginx 1.7.11.3 Gryphon</code>文件夹，打开dos窗口，运行<code>nginx.exe -c conf/nginx-win.conf</code></li>
+<li>打开dos窗口，运行<code>ffmpeg -list_devices true -f dshow -i dummy</code>，会列出所有系统连接的摄像头，找到需要的那个，复制名字<code>$name</code></li>
+<li>在dos窗口，运行<code>ffmpeg -f dshow -i video="$name" -vcodec libx264 -preset:v ultrafast -tune:v zerolatency -force_key_frames "expr:gte(t,n_forced*1)" -f flv rtmp://127.0.0.1:1935/hls/home</code> &gt; 其中，参数-force_key_frames "expr:gte(t,n_forced*1)"表示强制每1秒一个关键帧</li>
+<li>打开浏览器，尝试访问地址：<code>http://127.0.0.1:8765/hls/home.m3u8</code>，看是否显示直播画面，如果显示则表示成功</li>
+</ul>
+]]></content>
+      <categories>
+        <category>NFCA</category>
+        <category>摄像头</category>
+      </categories>
+      <tags>
+        <tag>NFCA</tag>
+        <tag>摄像头</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>安装win10+Ubuntu16.04双系统</title>
+    <url>/2020/10/25/%E5%AE%89%E8%A3%85win10-Ubuntu16-04%E5%8F%8C%E7%B3%BB%E7%BB%9F/</url>
+    <content><![CDATA[<p>安装win10+Ubuntu16.04双系统 参考链接：https://blog.csdn.net/ifreewolf_csdn/article/details/81330921</p>
+<p>复盘，几个要点： 1. 双硬盘都要改为GPT分区格式，主板启动方式设置为UEFI</p>
+<span id="more"></span>
+<ol start="2" type="1">
+<li>装win10，要直接用U盘启动盘装，我第一次用PE系统装就出错了</li>
+<li>提前在C盘分出500MB的空白卷，用来装Ubuntu16.04的引导。因为是双硬盘，一般就是一块硬盘分C盘，一块硬盘分D、E...盘，而系统引导最好是放在一块硬盘上，因为系统启动时是按照硬盘启动的，所以要把Ubuntu16.04的引导放在C盘，即同一块硬盘上</li>
+<li>其余Ubuntu16.04的安装，都放在另一块硬盘分出的区域，一般至少100G</li>
+<li>分区方案：
+<ol type="1">
+<li>Ubuntu16.04系统引导放在第一块硬盘，即C盘分出的500MB空白卷，重点！
+<ul>
+<li>/boot，C盘的分出的500MB，主分区，空间起始位置（Ubuntu16.04系统引导）</li>
+</ul></li>
+<li>其余分区，另一块硬盘的空白卷
+<ul>
+<li>swap，内存大小的2倍，逻辑分区，空间起始位置，交换空间</li>
+<li>/，20G，逻辑分区，空间起始位置，ext4</li>
+<li>/tmp，5G，逻辑分区，空间起始位置，ext4</li>
+<li>/home，剩余所有容量，逻辑分区，空间起始位置，ext4</li>
+</ul></li>
+</ol></li>
+<li>安装完成后，默认Ubuntu16.04是第一启动项，如果需要把win10改为第一启动项，做法是（参考链接：http://blog.sina.com.cn/s/blog_53a99cf30102yyyt.html）：
+<ol type="1">
+<li>终端中运行 <code>sudo gedit /boot/grub/grub.cfg</code></li>
+<li>找到<code>set default="0"</code>，修改<code>set default="0"</code>， 从第一条开始算，0是第一条，第三条就是2</li>
+</ol></li>
+</ol>
+]]></content>
+      <categories>
+        <category>Linux</category>
+        <category>Windows</category>
+        <category>双系统</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Windows</tag>
+        <tag>双系统</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>对全连接层（fully connected layer）的通俗理解</title>
+    <url>/2019/04/01/%E5%AF%B9%E5%85%A8%E8%BF%9E%E6%8E%A5%E5%B1%82%EF%BC%88fully%20connected%20layer%EF%BC%89%E7%9A%84%E9%80%9A%E4%BF%97%E7%90%86%E8%A7%A3/</url>
+    <content><![CDATA[<h1 id="对全连接层fully-connected-layer的通俗理解">对全连接层（fully connected layer）的通俗理解</h1>
+<h2 id="定义">定义</h2>
+<p>全连接层（fully connected layers，FC）在整个卷积神经网络中起到“分类器”的作用。如果说卷积层、池化层和激活函数层等操作是将原始数据映射到隐层特征空间的话，全连接层则起到将学到的“分布式特征表示”映射到样本标记空间的作用。在实际使用中，全连接层可由卷积操作实现：对前层是全连接的全连接层可以转化为卷积核为1x1的卷积；而前层是卷积层的全连接层可以转化为卷积核为hxw的全局卷积，h和w分别为前层卷积结果的高和宽。</p>
+<span id="more"></span>
+<p>全连接的核心操作就是矩阵向量乘积</p>
+<p><img data-src="https://i.loli.net/2019/04/01/5ca1df1b7bd2d.jpg" /></p>
+<p>本质就是由一个特征空间线性变换到另一个特征空间。目标空间的任一维——也就是隐层的一个 cell——都认为会受到源空间的每一维的影响。不考虑严谨，可以说，目标向量是源向量的加权和。</p>
+<p>在 CNN 中，全连接常出现在最后几层，用于对前面设计的特征做加权和。比如 mnist，前面的卷积和池化相当于做特征工程，后面的全连接相当于做特征加权。（卷积相当于全连接的有意弱化，按照局部视野的启发，把局部之外的弱影响直接抹为零影响；还做了一点强制，不同的局部所使用的参数居然一致。弱化使参数变少，节省计算量，又专攻局部不贪多求全；强制进一步减少参数。少即是多） 在 RNN 中，全连接用来把 embedding 空间拉到隐层空间，把隐层空间转回 label 空间等。</p>
+<h2 id="cnn与全连接">CNN与全连接</h2>
+<p>在CNN结构中，经多个卷积层和池化层后，连接着1个或1个以上的全连接层．与MLP类似，全连接层中的每个神经元与其前一层的所有神经元进行全连接．全连接层可以整合卷积层或者池化层中具有类别区分性的局部信息．为了提升 CNN网络性能，全连接层每个神经元的激励函数一般采用ReLU函数。最后一层全连接层的输出值被传递给一个输出，可以采用softmax逻辑回归（softmax regression）进行 分 类，该层也可 称为 softmax层（softmax layer）．对于一个具体的分类任务，选择一个合适的损失函数是十分重要的，CNN几种常用的损失函数并分析了它们各自的特点．通 常，CNN的全连接层与MLP 结构一样，CNN的训练算法也多采用BP算法</p>
+<p>举个例子：</p>
+<p><img data-src="https://i.loli.net/2019/04/01/5ca1df9267e62.jpg" /></p>
+<p>最后的两列小圆球就是两个全连接层，在最后一层卷积结束后，进行了最后一次池化，输出了20个12<em>12的图像，然后通过了一个全连接层变成了1</em>100的向量。</p>
+<p>这是怎么做到的呢，其实就是有20<em>100个12</em>12的卷积核卷积出来的，对于输入的每一张图，用了一个和图像一样大小的核卷积，这样整幅图就变成了一个数了，如果厚度是20就是那20个核卷积完了之后相加求和。这样就能把一张图高度浓缩成一个数了。全连接的目的是什么呢？因为传统的网络我们的输出都是分类，也就是几个类别的概率甚至就是一个数--类别号，那么全连接层就是高度提纯的特征了，方便交给最后的分类器或者回归。</p>
+<p>但是全连接的参数实在是太多了，你想这张图里就有20<em>12</em>12<em>100个参数，前面随便一层卷积，假设卷积核是7</em>7的，厚度是64，那也才7<em>7</em>64，所以现在的趋势是尽量避免全连接，目前主流的一个方法是全局平均值。</p>
+<p>也就是最后那一层的feature map（最后一层卷积的输出结果），直接求平均值。有多少种分类就训练多少层，这十个数字就是对应的概率或者叫置信度。</p>
+]]></content>
+      <categories>
+        <category>Machine Learning（机器学习）</category>
+        <category>Deep Learning（深度学习）</category>
+        <category>CNN（卷积神经网络）</category>
+      </categories>
+      <tags>
+        <tag>Machine Learning（机器学习）</tag>
+        <tag>Deep Learning（深度学习）</tag>
+        <tag>CNN（卷积神经网络）</tag>
+        <tag>fully connected layer（全连接层）</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>开机弹出www.msftconnecttest.com</title>
+    <url>/2020/08/26/%E5%BC%80%E6%9C%BA%E5%BC%B9%E5%87%BAhttpwww-msftconnect/</url>
+    <content><![CDATA[<p>同时按住Win + R键，输入“gpedit.msc”打开组策略控制台窗口。 依次展开“计算机配置”、“管理模板”、“系统”和“Internet 通信管理”，然后单击“Internet 通信设置”。 在详细信息窗格中，双击“关闭 Windows 网络连接状态指示器活动测试”，然后单击“已启用”。 <span id="more"></span> 作者：莫非 链接：https://www.zhihu.com/question/59865134/answer/169882237 来源：知乎 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+]]></content>
+      <categories>
+        <category>Windows, Windows好奇兴趣</category>
+      </categories>
+      <tags>
+        <tag>Windows</tag>
+        <tag>Windows组策略控制台</tag>
+        <tag>Windows好奇兴趣</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>搞科研常用工具</title>
+    <url>/2018/11/28/%E6%90%9E%E7%A7%91%E7%A0%94%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/</url>
+    <content><![CDATA[<h2 id="mendeley-desktop">Mendeley Desktop</h2>
+<p>跨平台论文管理、文件同步</p>
+<h2 id="mathpix">Mathpix</h2>
+<p>截图直接转latex数学公式 <span id="more"></span></p>
+<h2 id="markdown">Markdown</h2>
+<h3 id="windows">Windows</h3>
+<p>Moeditor：文件管理不好</p>
+<p>Typora：不支持数学公式（？）</p>
+<h3 id="linux">Linux</h3>
+<p>Moeditor：文件管理不好</p>
+<h3 id="mos">MOS</h3>
+<p>印象笔记</p>
+<h3 id="web">Web</h3>
+<p>印象笔记：不支持数学公式</p>
+<p>Jupyter</p>
+<h2 id="overleaf">Overleaf</h2>
+<p>latex排版论文，协作编辑</p>
+<h2 id="grammaly">Grammaly</h2>
+<p>帮助挑英语语法错误，有在线版</p>
+<h2 id="shortscienceopenreview">shortscience、openreview</h2>
+<p>查看论文评论</p>
+<h2 id="paperswithcode">paperswithcode</h2>
+<p>论文和github代码匹配</p>
+<h2 id="semantic-scholar">Semantic scholar</h2>
+<p>论文和作者分析</p>
+]]></content>
+      <categories>
+        <category>Academic</category>
+      </categories>
+      <tags>
+        <tag>Academic</tag>
+        <tag>Tool</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>磁盘删除OEM分区</title>
+    <url>/2021/01/06/%E7%A3%81%E7%9B%98%E5%88%A0%E9%99%A4OEM%E5%88%86%E5%8C%BA/</url>
+    <content><![CDATA[<ol type="1">
+<li>win + r 输入 diskpart</li>
+<li>list vol 回车</li>
+<li>记下 OEM 分区的卷号</li>
+<li>sel vol 卷号 回车</li>
+<li>del vol override</li>
+<li>回车</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Windows</category>
+        <category>Windows好奇兴趣</category>
+      </categories>
+      <tags>
+        <tag>Windows</tag>
+        <tag>Windows好奇兴趣</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>重装系统时，提示：“Windows无法安装到这个磁盘，选中的磁盘具有MBR分区表。在EFI系统上，Windows只能安装到GPT磁盘。”</title>
+    <url>/2019/08/16/%E9%87%8D%E8%A3%85%E7%B3%BB%E7%BB%9F%E6%97%B6%EF%BC%8C%E6%8F%90%E7%A4%BA%EF%BC%9AWindows%E6%97%A0%E6%B3%95%E5%AE%89%E8%A3%85%E5%88%B0%E8%BF%99%E4%B8%AA%E7%A3%81%E7%9B%98/</url>
+    <content><![CDATA[<h1 id="问题描述">问题描述</h1>
+<p>重装系统时，提示: &gt; Windows无法安装到这个磁盘，选中的磁盘具有MBR分区表。在EFI系统上，Windows只能安装到GPT磁盘。</p>
+<h1 id="解决办法">解决办法</h1>
+<p>退回到选择语言的界面，按<code>Shift+F10</code>，就会启动具有管理员权限的CMD</p>
+<ol type="1">
+<li><code>diskpart</code>（启动Diskpart程序）</li>
+<li><code>list disk</code> （查看电脑中有哪些磁盘）</li>
+<li><code>select disk 0</code>（选中编号为0的磁盘） <span id="more"></span></li>
+<li><code>clean</code>（清除磁盘所有分区）</li>
+<li><code>convert gpt</code> （将磁盘转换成GPT格式）</li>
+<li><code>list partition</code>（查看当前磁盘分区情况）</li>
+<li><code>create partition efi size=100</code>（默认大小为M）</li>
+<li><code>create partition msr size =128</code></li>
+<li><code>create partition primary size =102400</code>（处为你想设置C盘的大小）</li>
+<li>两次输入<code>exit</code></li>
+</ol>
+<blockquote>
+<p>注：7、8、9三步可以不做，在装系统的时候直接选择未分配区域即可。系统会自动创建EFI分区和MSR分区。</p>
+</blockquote>
+<h1 id="参考网址">参考网址</h1>
+<blockquote>
+<p>https://www.cnblogs.com/John-2011/p/10287001.html</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Windows</category>
+      </categories>
+      <tags>
+        <tag>Windows</tag>
+        <tag>重装系统</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>项目上线，vue-cli部署到新的服务器</title>
+    <url>/2019/11/29/%E9%A1%B9%E7%9B%AE%E4%B8%8A%E7%BA%BF%EF%BC%8Cvue-cli%E9%83%A8%E7%BD%B2%E5%88%B0%E6%96%B0%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
+    <content><![CDATA[<h3 id="新的服务器参数">新的服务器参数</h3>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">47.94.173.161:22</span><br><span class="line">root</span><br><span class="line">lixiang123.</span><br></pre></td></tr></table></figure>
+<h3 id="开始部署">开始部署</h3>
+<h4 id="把vue项目打包并传到服务器">1 把vue项目打包，并传到服务器</h4>
+<p>在<code>/config/index.js</code>文件里，编辑名为"build"的json:</p>
+<ul>
+<li><code>assetsPublicPath: './',</code></li>
+<li><code>productionSourceMap: false,</code></li>
+</ul>
+<span id="more"></span>
+<p>再<code>npm run build</code>，把生成的<code>dist</code>文件夹拷贝到服务器<code>/root/easy_projects_web</code></p>
+<h4 id="配置服务器nginx">2 配置服务器nginx</h4>
+<p>打开配置文件，高鸣飞的服务器中nginx配置文件在<code>/etc/nginx/conf.d</code></p>
+<p>配置文件中加上：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">     listen 443;</span><br><span class="line">     server_name www.zhlixiang.com; #填写绑定证书的域名</span><br><span class="line">     ssl on;</span><br><span class="line">     ssl_certificate 1_www.zhlixiang.com_bundle.crt;</span><br><span class="line">     ssl_certificate_key 2_www.zhlixiang.com.key;</span><br><span class="line">     ssl_session_timeout 5m;</span><br><span class="line">     ssl_protocols TLSv1 TLSv1.1 TLSv1.2; #按照这个协议配置</span><br><span class="line">     ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE;#按照这个套件配置</span><br><span class="line">     ssl_prefer_server_ciphers on;</span><br><span class="line"></span><br><span class="line">     location / &#123;</span><br><span class="line">         alias /root/easy_projects_web/;</span><br><span class="line">     &#125;</span><br><span class="line">     location /api/ &#123;</span><br><span class="line">         include         uwsgi_params;</span><br><span class="line">         uwsgi_pass      unix:/root/easy_projects_server/easy_projects_server.sock;</span><br><span class="line">         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">         proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">         proxy_set_header Host $http_host;</span><br><span class="line">         proxy_http_version 1.1;</span><br><span class="line">         proxy_redirect off;</span><br><span class="line">         proxy_buffering off;</span><br><span class="line">         proxy_set_header Upgrade $http_upgrade;</span><br><span class="line">         proxy_set_header Connection &quot;upgrade&quot;;</span><br><span class="line">         proxy_read_timeout 86400;</span><br><span class="line">         client_max_body_size 0;</span><br><span class="line">     &#125;</span><br><span class="line">    location /media/ &#123;</span><br><span class="line">        alias /root/easy_projects_server/media/;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name www.zhlixiang.com;</span><br><span class="line">    rewrite ^(.*)$ https://$&#123;server_name&#125;$1 permanent;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="重启nginx">3 重启nginx</h4>
+<p><code>nginx -s reload</code></p>
+<h4 id="尝试访问">4 尝试访问</h4>
+<p>https://www.zhlixiang.com/</p>
+<p>访问成功</p>
+]]></content>
+      <categories>
+        <category>前端开发</category>
+        <category>Vue</category>
+        <category>Vue-cli</category>
+      </categories>
+      <tags>
+        <tag>前端开发</tag>
+        <tag>Vue</tag>
+        <tag>Vue-cli</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>飞利浦显示器关闭蓝屏logo:PHILIPS字样</title>
+    <url>/2020/07/27/%E9%A3%9E%E5%88%A9%E6%B5%A6%E6%98%BE%E7%A4%BA%E5%99%A8%E5%85%B3%E9%97%AD%E8%93%9D%E5%B1%8FlogoPHILIPS%E5%AD%97%E6%A0%B7/</url>
+    <content><![CDATA[<blockquote>
+<p>参考文章：http://blog.sina.com.cn/s/blog_68d663140101k74h.html</p>
+</blockquote>
+<p>右下方按键从左到右依次编号1、2、3、4、5</p>
+<ol type="1">
+<li>显示器关闭状态下，同时按住Auto和Menu（1键和4键）不放，然后打开显示器电源（5键），松开Auto和Menu， 按下Menu键（4键）， 菜单的最下方，多出了个“Factory”的选项，选中并且按OK（4键）就可以进入工厂模式。（若选中后一瞬间自动跳出，那么考验手速的时候到了，选中那一刹那里面按OK（4键）） <span id="more"></span></li>
+<li>进入“Factory”选项，选择“PwrOnLogo”---“Yes”修改为“No”即可。按OK（4键）确定。</li>
+<li>按1键返回。</li>
+<li>关闭显示器电源，当重新开启显示器时，刺眼的蓝色logo没有了，庆祝一下！！！</li>
+</ol>
+]]></content>
+      <categories>
+        <category>显示器</category>
+        <category>Philips（飞利浦）</category>
+      </categories>
+      <tags>
+        <tag>显示器</tag>
+        <tag>Philips（飞利浦）</tag>
+      </tags>
+  </entry>
+</search>
