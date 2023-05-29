@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="参考网址 https:&#x2F;&#x2F;www.cnblogs.com&#x2F;raphael5200&#x2F;p&#x2F;5260198.html   在服务器中下载PhoenixPhoenix下载地址：http:&#x2F;&#x2F;mirror.bit.edu.cn&#x2F;apache&#x2F;phoenix&#x2F; 在145服务器中切换到root用户su root 输入密码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BigData-6-HBase可视化工具Phoenix安装和Squirrel安装">
+<meta property="og:url" content="http://example.com/2018/12/03/BigData-6-HBase%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7Phoenix%E5%AE%89%E8%A3%85%E5%92%8CSquirrel%E5%AE%89%E8%A3%85/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="参考网址 https:&#x2F;&#x2F;www.cnblogs.com&#x2F;raphael5200&#x2F;p&#x2F;5260198.html   在服务器中下载PhoenixPhoenix下载地址：http:&#x2F;&#x2F;mirror.bit.edu.cn&#x2F;apache&#x2F;phoenix&#x2F; 在145服务器中切换到root用户su root 输入密码">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.loli.net/2018/12/01/5c023b4d74784.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/12/01/5c023c41ccda9.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/12/01/5c02146a592be.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/12/01/5c02251602391.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/12/01/5c0229e26abd3.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/12/01/5c022b953cee2.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/12/01/5c022c19acf73.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/12/01/5c022c2e63837.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/12/01/5c02371f93c80.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/12/01/5c0237694a8d5.jpg">
+<meta property="article:published_time" content="2018-12-03T03:58:03.000Z">
+<meta property="article:modified_time" content="2023-05-29T16:15:40.957Z">
+<meta property="article:author" content="Jacen Chou">
+<meta property="article:tag" content="BigData（大数据）">
+<meta property="article:tag" content="HBase">
+<meta property="article:tag" content="Phoenix">
+<meta property="article:tag" content="Squirrel">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2018/12/01/5c023b4d74784.jpg">
+
+
+<link rel="canonical" href="http://example.com/2018/12/03/BigData-6-HBase%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7Phoenix%E5%AE%89%E8%A3%85%E5%92%8CSquirrel%E5%AE%89%E8%A3%85/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2018/12/03/BigData-6-HBase%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7Phoenix%E5%AE%89%E8%A3%85%E5%92%8CSquirrel%E5%AE%89%E8%A3%85/","path":"2018/12/03/BigData-6-HBase可视化工具Phoenix安装和Squirrel安装/","title":"BigData-6-HBase可视化工具Phoenix安装和Squirrel安装"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>BigData-6-HBase可视化工具Phoenix安装和Squirrel安装 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E7%BD%91%E5%9D%80"><span class="nav-number">1.</span> <span class="nav-text">参考网址</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%AD%E4%B8%8B%E8%BD%BDPhoenix"><span class="nav-number">2.</span> <span class="nav-text">在服务器中下载Phoenix</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8B%B7%E8%B4%9D%E4%B8%80%E4%BB%BD%E5%88%B0%E5%AE%B9%E5%99%A8%E4%B8%AD"><span class="nav-number">3.</span> <span class="nav-text">拷贝一份到容器中</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8%E5%AE%B9%E5%99%A8%E4%B8%AD%E8%A7%A3%E5%8E%8B"><span class="nav-number">4.</span> <span class="nav-text">在容器中解压</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8%E5%AE%B9%E5%99%A8%E4%B8%AD%E9%85%8D%E7%BD%AEPhoenix"><span class="nav-number">5.</span> <span class="nav-text">在容器中配置Phoenix</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8145%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%AD%E8%A7%A3%E5%8E%8B"><span class="nav-number">6.</span> <span class="nav-text">在145服务器中解压</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8Windows%E4%B8%AD%E9%85%8D%E7%BD%AEHosts"><span class="nav-number">7.</span> <span class="nav-text">在Windows中配置Hosts</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8Windows%E4%B8%AD%E4%B8%8B%E8%BD%BDSQuirreL-SQL-Client"><span class="nav-number">8.</span> <span class="nav-text">在Windows中下载SQuirreL SQL Client</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8Windows%E4%B8%AD%E5%AE%89%E8%A3%85SQuirreL-SQL-Client"><span class="nav-number">9.</span> <span class="nav-text">在Windows中安装SQuirreL SQL Client</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%8E%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%AD%E6%8B%B7%E8%B4%9Djar%E5%8C%85%E5%88%B0Windows"><span class="nav-number">10.</span> <span class="nav-text">从服务器中拷贝jar包到Windows</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8SQuirreL-SQL-Client"><span class="nav-number">11.</span> <span class="nav-text">启动SQuirreL SQL Client</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AESQuirreL-SQL-Client"><span class="nav-number">12.</span> <span class="nav-text">配置SQuirreL SQL Client</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5Phoenix"><span class="nav-number">13.</span> <span class="nav-text">连接Phoenix</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Jacen Chou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/12/03/BigData-6-HBase%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7Phoenix%E5%AE%89%E8%A3%85%E5%92%8CSquirrel%E5%AE%89%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jacen Chou">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="BigData-6-HBase可视化工具Phoenix安装和Squirrel安装 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          BigData-6-HBase可视化工具Phoenix安装和Squirrel安装
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2018-12-03 11:58:03" itemprop="dateCreated datePublished" datetime="2018-12-03T11:58:03+08:00">2018-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-05-30 00:15:40" itemprop="dateModified" datetime="2023-05-30T00:15:40+08:00">2023-05-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/BigData%EF%BC%88%E5%A4%A7%E6%95%B0%E6%8D%AE%EF%BC%89/" itemprop="url" rel="index"><span itemprop="name">BigData（大数据）</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/BigData%EF%BC%88%E5%A4%A7%E6%95%B0%E6%8D%AE%EF%BC%89/HBase/" itemprop="url" rel="index"><span itemprop="name">HBase</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h4 id="参考网址"><a href="#参考网址" class="headerlink" title="参考网址"></a>参考网址</h4><blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/raphael5200/p/5260198.html">https://www.cnblogs.com/raphael5200/p/5260198.html</a></p>
+</blockquote>
+<hr>
+<h4 id="在服务器中下载Phoenix"><a href="#在服务器中下载Phoenix" class="headerlink" title="在服务器中下载Phoenix"></a>在服务器中下载Phoenix</h4><p>Phoenix下载地址：<a target="_blank" rel="noopener" href="http://mirror.bit.edu.cn/apache/phoenix/">http://mirror.bit.edu.cn/apache/phoenix/</a></p>
+<p>在145服务器中切换到root用户<code>su root</code></p>
+<p>输入密码</p>
+<span id="more"></span>
+
+<p><code>cd /home1/jupyter_data/ZJC/</code></p>
+<p><code>wget http://archive.apache.org/dist/phoenix/apache-phoenix-4.14.1-HBase-1.4/bin/apache-phoenix-4.14.1-HBase-1.4-bin.tar.gz</code></p>
+<h4 id="拷贝一份到容器中"><a href="#拷贝一份到容器中" class="headerlink" title="拷贝一份到容器中"></a>拷贝一份到容器中</h4><p><code>docker cp /home1/jupyter_data/ZJC/apache-phoenix-4.14.1-HBase-1.4-bin.tar.gz 62f1:/opt/</code></p>
+<h4 id="在容器中解压"><a href="#在容器中解压" class="headerlink" title="在容器中解压"></a>在容器中解压</h4><p><code>docker exec -it 62f1 /bin/bash</code></p>
+<p><code>cd /opt/</code></p>
+<p><code>tar -zxvf apache-phoenix-4.14.1-HBase-1.4-bin.tar.gz</code></p>
+<h4 id="在容器中配置Phoenix"><a href="#在容器中配置Phoenix" class="headerlink" title="在容器中配置Phoenix"></a>在容器中配置Phoenix</h4><ol>
+<li><p>将apache-phoenix-4.14.1-HBase-1.4-bin.tar.gz目录下phoenix-core-4.14.1-HBase-1.4.jar、phoenix-4.14.1-HBase-1.4-server.jar拷贝到hbase的lib目录下：</p>
+<p> <code>cp ./phoenix-core-4.14.1-HBase-1.4.jar /opt/hbase-1.4.8/lib/</code></p>
+<p> <code>cp ./phoenix-4.14.1-HBase-1.4-server.jar /opt/hbase-1.4.8/lib/</code></p>
+</li>
+<li><p>将hbase的配置文件hbase-site.xml、 &#x2F;opc&#x2F;hadoop-2.7.7&#x2F;etc&#x2F;hadoop下的core-site.xml 、hdfs-site.xml放到phoenix-4.5.2-HBase-1.1-bin&#x2F;bin&#x2F;下，替换Phoenix原来的配置文件：</p>
+<p> <code>cp /opt/hbase-1.4.8/conf/hbase-site.xml /opt/apache-phoenix-4.14.1-HBase-1.4-bin/bin/hbase-site.xml</code></p>
+<p> <code>cp /opt/hadoop-2.7.7/etc/hadoop/core-site.xml /opt/apache-phoenix-4.14.1-HBase-1.4-bin/bin/</code></p>
+<p> <code>cp /opt/hadoop-2.7.7/etc/hadoop/hdfs-site.xml /opt/apache-phoenix-4.14.1-HBase-1.4-bin/bin/</code></p>
+</li>
+<li><p>验证是否成功</p>
+<p> <code>cd /opt/apache-phoenix-4.14.1-HBase-1.4-bin/bin</code></p>
+<p> <code>./sqlline.py 62f169f8d9d1:2181</code></p>
+<p> 成功截图：<br> <img src="https://i.loli.net/2018/12/01/5c023b4d74784.jpg"></p>
+</li>
+<li><p>输入<code>!tables</code>，查看都有哪些表<br> 如图：<br> <img src="https://i.loli.net/2018/12/01/5c023c41ccda9.jpg"></p>
+</li>
+<li><p>输入<code>!exit</code>退出</p>
+</li>
+</ol>
+<h4 id="在145服务器中解压"><a href="#在145服务器中解压" class="headerlink" title="在145服务器中解压"></a>在145服务器中解压</h4><p><code>tar -zxvf /home1/jupyter_data/ZJC/apache-phoenix-4.14.1-HBase-1.4-bin.tar.gz</code></p>
+<h4 id="在Windows中配置Hosts"><a href="#在Windows中配置Hosts" class="headerlink" title="在Windows中配置Hosts"></a>在Windows中配置Hosts</h4><ol>
+<li>用记事本打开<code>C:\Windows\System32\drivers\etc\hosts</code></li>
+<li>确保<code>127.0.0.1       localhost</code>被注释</li>
+<li>在最后加入<code>202.204.62.145 62f169f8d9d1</code></li>
+<li>保存</li>
+</ol>
+<h4 id="在Windows中下载SQuirreL-SQL-Client"><a href="#在Windows中下载SQuirreL-SQL-Client" class="headerlink" title="在Windows中下载SQuirreL SQL Client"></a>在Windows中下载SQuirreL SQL Client</h4><p><strong>注意在Windows中操作</strong></p>
+<p>SQuirreL SQL Client下载地址：<a target="_blank" rel="noopener" href="http://www.squirrelsql.org/">http://www.squirrelsql.org/</a></p>
+<p>下载完成后，将<code>squirrel-sql-3.9.0-standard.jar</code>文件移动到<code>E:\Software\SQuirreL</code></p>
+<h4 id="在Windows中安装SQuirreL-SQL-Client"><a href="#在Windows中安装SQuirreL-SQL-Client" class="headerlink" title="在Windows中安装SQuirreL SQL Client"></a>在Windows中安装SQuirreL SQL Client</h4><p><strong>注意在Windows中操作</strong></p>
+<p><strong>注意jdk版本要求至少1.8！</strong></p>
+<ol>
+<li>进入cmd</li>
+<li><code>e:</code></li>
+<li><code>cd Software</code></li>
+<li><code>cd SQuirreL</code></li>
+<li><code>java -jar squirrel-sql-3.9.0-standard.jar</code><br><img src="https://i.loli.net/2018/12/01/5c02146a592be.jpg"></li>
+<li>弹出安装界面，一路Next，记住安装路径为<code>C:\Program Files\squirrel-sql-3.9.0</code></li>
+</ol>
+<h4 id="从服务器中拷贝jar包到Windows"><a href="#从服务器中拷贝jar包到Windows" class="headerlink" title="从服务器中拷贝jar包到Windows"></a>从服务器中拷贝jar包到Windows</h4><p>使用WinSCP</p>
+<p>将服务器中解压到的<code>/home1/jupyter_data/ZJC/apache-phoenix-4.14.1-HBase-1.4-bin</code>目录下的如下两个jar包：</p>
+<ol>
+<li><code>phoenix-4.14.1-HBase-1.4-client.jar</code></li>
+<li><code>phoenix-core-4.14.1-HBase-1.4.jar</code></li>
+</ol>
+<p>拷贝到squirrel安装目录的lib下<code>C:\Program Files\squirrel-sql-3.9.0\lib</code></p>
+<h4 id="启动SQuirreL-SQL-Client"><a href="#启动SQuirreL-SQL-Client" class="headerlink" title="启动SQuirreL SQL Client"></a>启动SQuirreL SQL Client</h4><p>在安装目录<code>C:\Program Files\squirrel-sql-3.9.0</code>下双击<code>squirrel-sql.bat</code></p>
+<h4 id="配置SQuirreL-SQL-Client"><a href="#配置SQuirreL-SQL-Client" class="headerlink" title="配置SQuirreL SQL Client"></a>配置SQuirreL SQL Client</h4><ol>
+<li><p>点击左侧<code>Drivers</code><br> <img src="https://i.loli.net/2018/12/01/5c02251602391.jpg"></p>
+</li>
+<li><p>点击<code>+</code><br> <img src="https://i.loli.net/2018/12/01/5c0229e26abd3.jpg"></p>
+</li>
+<li><p>按图配置<br> Name:<code>phoenix</code></p>
+<p> Example URL:<code>jdbc:phoenix:202.204.62.145:2181</code></p>
+<p> Class Name:<code>org.apache.phoenix.jdbc.PhoenixDriver</code></p>
+<p> <img src="https://i.loli.net/2018/12/01/5c022b953cee2.jpg"></p>
+</li>
+</ol>
+<h4 id="连接Phoenix"><a href="#连接Phoenix" class="headerlink" title="连接Phoenix"></a>连接Phoenix</h4><ol>
+<li>点击左侧<code>Aiiasses</code><br> <img src="https://i.loli.net/2018/12/01/5c022c19acf73.jpg"></li>
+<li>点击<code>+</code><br> <img src="https://i.loli.net/2018/12/01/5c022c2e63837.jpg"></li>
+<li>按图配置<br> <img src="https://i.loli.net/2018/12/01/5c02371f93c80.jpg"><br> 用户名hadoop<br> 密码hadoop123</li>
+<li>点击Test进行测试连接<br>出现connection successful，测试成功<br><img src="https://i.loli.net/2018/12/01/5c0237694a8d5.jpg"></li>
+<li>点击OK连接</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/BigData%EF%BC%88%E5%A4%A7%E6%95%B0%E6%8D%AE%EF%BC%89/" rel="tag"># BigData（大数据）</a>
+              <a href="/tags/HBase/" rel="tag"># HBase</a>
+              <a href="/tags/Phoenix/" rel="tag"># Phoenix</a>
+              <a href="/tags/Squirrel/" rel="tag"># Squirrel</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/12/02/BigData-5-OpenTSDB%E4%B8%8B%E8%BD%BD%E3%80%81%E5%AE%89%E8%A3%85%E3%80%81%E9%85%8D%E7%BD%AE/" rel="prev" title="BigData-5-OpenTSDB下载、安装、配置">
+                  <i class="fa fa-chevron-left"></i> BigData-5-OpenTSDB下载、安装、配置
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/12/27/Python%E7%89%88%E6%9C%AC%E5%85%B1%E5%AD%98/" rel="next" title="Python版本共存">
+                  Python版本共存 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jacen Chou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

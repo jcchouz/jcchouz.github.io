@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="首先145服务器有：带java的ubuntu镜像 1 创建容器docker run -itd -p 50070:50070 -p 8088:8088 ubuntu:java 2 进入容器docker exec -it 333a &#x2F;bin&#x2F;bash 3 配置&#x2F;etc&#x2F;hosts文件1234cat&gt;&gt;&#x2F;etc&#x2F;hosts&lt;&lt;EOF  #Hadoop Name">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BigData-1-Hadoop下载、安装、伪分布式配置">
+<meta property="og:url" content="http://example.com/2018/11/27/BigData-1-Hadoop%E4%B8%8B%E8%BD%BD%E3%80%81%E5%AE%89%E8%A3%85%E3%80%81%E4%BC%AA%E5%88%86%E5%B8%83%E5%BC%8F%E9%85%8D%E7%BD%AE/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="首先145服务器有：带java的ubuntu镜像 1 创建容器docker run -itd -p 50070:50070 -p 8088:8088 ubuntu:java 2 进入容器docker exec -it 333a &#x2F;bin&#x2F;bash 3 配置&#x2F;etc&#x2F;hosts文件1234cat&gt;&gt;&#x2F;etc&#x2F;hosts&lt;&lt;EOF  #Hadoop Name">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.loli.net/2018/11/25/5bfa3f06cda6c.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/25/5bfa45d5a2a7d.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/25/5bfa482124e9b.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/25/5bfa4894b40bf.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/25/5bfa5ce96f0a1.jpg">
+<meta property="og:image" content="https://i.loli.net/2018/11/25/5bfa5d39b3c88.jpg">
+<meta property="article:published_time" content="2018-11-27T07:41:01.000Z">
+<meta property="article:modified_time" content="2023-05-29T16:15:40.947Z">
+<meta property="article:author" content="Jacen Chou">
+<meta property="article:tag" content="BigData（大数据）">
+<meta property="article:tag" content="Hadoop">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2018/11/25/5bfa3f06cda6c.jpg">
+
+
+<link rel="canonical" href="http://example.com/2018/11/27/BigData-1-Hadoop%E4%B8%8B%E8%BD%BD%E3%80%81%E5%AE%89%E8%A3%85%E3%80%81%E4%BC%AA%E5%88%86%E5%B8%83%E5%BC%8F%E9%85%8D%E7%BD%AE/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2018/11/27/BigData-1-Hadoop%E4%B8%8B%E8%BD%BD%E3%80%81%E5%AE%89%E8%A3%85%E3%80%81%E4%BC%AA%E5%88%86%E5%B8%83%E5%BC%8F%E9%85%8D%E7%BD%AE/","path":"2018/11/27/BigData-1-Hadoop下载、安装、伪分布式配置/","title":"BigData-1-Hadoop下载、安装、伪分布式配置"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>BigData-1-Hadoop下载、安装、伪分布式配置 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%88%9B%E5%BB%BA%E5%AE%B9%E5%99%A8"><span class="nav-number">1.</span> <span class="nav-text">1 创建容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E8%BF%9B%E5%85%A5%E5%AE%B9%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">2 进入容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E9%85%8D%E7%BD%AE-x2F-etc-x2F-hosts%E6%96%87%E4%BB%B6"><span class="nav-number">3.</span> <span class="nav-text">3 配置&#x2F;etc&#x2F;hosts文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E8%AE%BE%E7%BD%AEroot%E5%AF%86%E7%A0%81"><span class="nav-number">4.</span> <span class="nav-text">4 设置root密码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-%E5%88%9B%E5%BB%BAhadoop%E7%94%A8%E6%88%B7%EF%BC%8C%E5%B9%B6%E8%AE%BE%E7%BD%AE%E5%AF%86%E7%A0%81"><span class="nav-number">5.</span> <span class="nav-text">5 创建hadoop用户，并设置密码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-ubuntu%E6%9F%A5%E7%9C%8B%E7%94%A8%E6%88%B7%E5%88%97%E8%A1%A8"><span class="nav-number">6.</span> <span class="nav-text">6 ubuntu查看用户列表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7-%E5%88%9B%E5%BB%BAHADOOP%E5%AE%89%E8%A3%85%E7%9B%AE%E5%BD%95"><span class="nav-number">7.</span> <span class="nav-text">7 创建HADOOP安装目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-%E4%B8%BAhadoop%E7%94%A8%E6%88%B7%E8%AE%BE%E7%BD%AEshell%E9%99%90%E5%88%B6"><span class="nav-number">8.</span> <span class="nav-text">8 为hadoop用户设置shell限制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#9-%E9%85%8D%E7%BD%AEHadoop%E7%94%A8%E6%88%B7%E7%9A%84%E7%8E%AF%E5%A2%83%E6%96%87%E4%BB%B6"><span class="nav-number">9.</span> <span class="nav-text">9 配置Hadoop用户的环境文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#10-%E5%AE%89%E8%A3%85Hadoop2-7-7%E8%BD%AF%E4%BB%B6"><span class="nav-number">10.</span> <span class="nav-text">10 安装Hadoop2.7.7软件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#11-%E9%85%8D%E7%BD%AEssh%E6%9C%AC%E6%9C%BA%E6%97%A0%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95"><span class="nav-number">11.</span> <span class="nav-text">11 配置ssh本机无密码登录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#12-%E9%85%8D%E7%BD%AE%E5%8D%95%E8%8A%82%E7%82%B9%E4%BC%AA%E5%88%86%E5%B8%83%E5%BC%8F%EF%BC%88Pseudo-Distributed%EF%BC%89Hadoop%E7%8E%AF%E5%A2%83"><span class="nav-number">12.</span> <span class="nav-text">12 配置单节点伪分布式（Pseudo-Distributed）Hadoop环境</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#13-%E9%85%8D%E7%BD%AE%E5%8D%95%E8%8A%82%E7%82%B9%E4%B8%8A%E7%9A%84YARN"><span class="nav-number">13.</span> <span class="nav-text">13 配置单节点上的YARN</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#14-%E6%B5%8B%E8%AF%95%EF%BC%9A%E8%BF%90%E8%A1%8C%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F"><span class="nav-number">14.</span> <span class="nav-text">14 测试：运行示例程序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#15-%E5%88%B6%E4%BD%9Cdocker%E9%95%9C%E5%83%8F"><span class="nav-number">15.</span> <span class="nav-text">15 制作docker镜像</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Jacen Chou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/11/27/BigData-1-Hadoop%E4%B8%8B%E8%BD%BD%E3%80%81%E5%AE%89%E8%A3%85%E3%80%81%E4%BC%AA%E5%88%86%E5%B8%83%E5%BC%8F%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jacen Chou">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="BigData-1-Hadoop下载、安装、伪分布式配置 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          BigData-1-Hadoop下载、安装、伪分布式配置
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2018-11-27 15:41:01" itemprop="dateCreated datePublished" datetime="2018-11-27T15:41:01+08:00">2018-11-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-05-30 00:15:40" itemprop="dateModified" datetime="2023-05-30T00:15:40+08:00">2023-05-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/BigData%EF%BC%88%E5%A4%A7%E6%95%B0%E6%8D%AE%EF%BC%89/" itemprop="url" rel="index"><span itemprop="name">BigData（大数据）</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/BigData%EF%BC%88%E5%A4%A7%E6%95%B0%E6%8D%AE%EF%BC%89/Hadoop/" itemprop="url" rel="index"><span itemprop="name">Hadoop</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>首先145服务器有：带java的ubuntu镜像</p>
+<h4 id="1-创建容器"><a href="#1-创建容器" class="headerlink" title="1 创建容器"></a>1 创建容器</h4><p><code>docker run -itd -p 50070:50070 -p 8088:8088 ubuntu:java</code></p>
+<h4 id="2-进入容器"><a href="#2-进入容器" class="headerlink" title="2 进入容器"></a>2 进入容器</h4><p><code>docker exec -it 333a /bin/bash</code></p>
+<h4 id="3-配置-x2F-etc-x2F-hosts文件"><a href="#3-配置-x2F-etc-x2F-hosts文件" class="headerlink" title="3 配置&#x2F;etc&#x2F;hosts文件"></a>3 配置&#x2F;etc&#x2F;hosts文件</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cat&gt;&gt;/etc/hosts&lt;&lt;EOF  </span><br><span class="line">#Hadoop Name Node  </span><br><span class="line">172.17.0.3  hadoop1  </span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<p>设置开机自动配置</p>
+<ul>
+<li>切换到root用户<code>su root</code>，输入密码</li>
+<li><code>vi ~/.bashrc</code></li>
+<li>在最后加上<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cat&gt;&gt;/etc/hosts&lt;&lt;EOF  </span><br><span class="line">#Hadoop Name Node  </span><br><span class="line">172.17.0.3  hadoop1  </span><br><span class="line">EOF</span><br></pre></td></tr></table></figure></li>
+<li>执行一下.bashrc文件 <code>source ~/.bashrc</code></li>
+</ul>
+<h4 id="4-设置root密码"><a href="#4-设置root密码" class="headerlink" title="4 设置root密码"></a>4 设置root密码</h4><p><code>passwd root</code></p>
+<p>*<strong>密码：root</strong></p>
+<h4 id="5-创建hadoop用户，并设置密码"><a href="#5-创建hadoop用户，并设置密码" class="headerlink" title="5 创建hadoop用户，并设置密码"></a>5 创建hadoop用户，并设置密码</h4><p><code>useradd -m hadoop</code></p>
+<p><code>passwd hadoop</code></p>
+<p>密码：<code>hadoop123</code></p>
+<p>*删除用户<code>userdel -r hadoop</code></p>
+<h4 id="6-ubuntu查看用户列表"><a href="#6-ubuntu查看用户列表" class="headerlink" title="6 ubuntu查看用户列表"></a>6 ubuntu查看用户列表</h4><p><code>cat /etc/passwd</code></p>
+<h4 id="7-创建HADOOP安装目录"><a href="#7-创建HADOOP安装目录" class="headerlink" title="7 创建HADOOP安装目录"></a>7 创建HADOOP安装目录</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir /opt/hadoop-2.7.7</span><br><span class="line">chown -R hadoop.hadoop /opt/hadoop-2.7.7</span><br><span class="line">ln -s /opt/hadoop-2.7.7 /opt/hadoop</span><br><span class="line">chown -R hadoop.hadoop /opt/hadoop</span><br></pre></td></tr></table></figure>
+
+<h4 id="8-为hadoop用户设置shell限制"><a href="#8-为hadoop用户设置shell限制" class="headerlink" title="8 为hadoop用户设置shell限制"></a>8 为hadoop用户设置shell限制</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cat&gt;&gt;/etc/security/limits.conf&lt;&lt;EOF</span><br><span class="line">hadoop soft nproc 2047</span><br><span class="line">hadoop hard nproc 16384</span><br><span class="line">hadoop soft nofile 1024</span><br><span class="line">hadoop hard nofile 65536</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cat&gt;&gt;/etc/pam.d/login&lt;&lt;EOF</span><br><span class="line">session    required     pam_limits.so</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<h4 id="9-配置Hadoop用户的环境文件"><a href="#9-配置Hadoop用户的环境文件" class="headerlink" title="9 配置Hadoop用户的环境文件"></a>9 配置Hadoop用户的环境文件</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">cat &gt; ~hadoop/.bashrc &lt;&lt;EOF</span><br><span class="line"># .bashrc</span><br><span class="line"></span><br><span class="line"># Source global definitions</span><br><span class="line">if [ -f /etc/bashrc ]; then</span><br><span class="line">        . /etc/bashrc</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"># User specific aliases and functions</span><br><span class="line"></span><br><span class="line">JAVA_HOME=/usr/lib/jvm/java-8-oracle</span><br><span class="line">export JAVA_HOME</span><br><span class="line"></span><br><span class="line">HADOOP_HOME=/opt/hadoop</span><br><span class="line">export HADOOP_HOME</span><br><span class="line"></span><br><span class="line">HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop</span><br><span class="line">export HADOOP_CONF_DIR</span><br><span class="line"></span><br><span class="line">export SPARK_HOME=/opt/spark</span><br><span class="line"></span><br><span class="line">PATH=\$HADOOP_HOME/bin:\$HADOOP_HOME/sbin:\$SPARK_HOME/bin:\$SPARK_HOME/sbin:\$JAVA_HOME/bin:\$PATH</span><br><span class="line">export PATH</span><br><span class="line"></span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<h4 id="10-安装Hadoop2-7-7软件"><a href="#10-安装Hadoop2-7-7软件" class="headerlink" title="10 安装Hadoop2.7.7软件"></a>10 安装Hadoop2.7.7软件</h4><p>从145服务器中拷过来安装包</p>
+<p>或者下载<code>wget https://www-eu.apache.org/dist/hadoop/common/hadoop-2.7.7/hadoop-2.7.7.tar.gz</code></p>
+<p>退出容器，但不关闭<code>ctrl+P+Q</code></p>
+<p>改为root用户<code>su root</code>，输入密码</p>
+<p>拷贝安装包<code>docker cp /home1/jupyter_data/ZhouJiacheng/hadoop-2.7.7.tar.gz 333a:/opt/</code></p>
+<p>进入容器<code>docker exec -it 333a /bin/bash</code></p>
+<p>解压(-c 表示解压到指定目录)<code>tar -zxvf /opt/hadoop-2.7.7.tar.gz -C /opt/</code></p>
+<h4 id="11-配置ssh本机无密码登录"><a href="#11-配置ssh本机无密码登录" class="headerlink" title="11 配置ssh本机无密码登录"></a>11 配置ssh本机无密码登录</h4><ol>
+<li>root用户下</li>
+</ol>
+<ul>
+<li><p>先执行<code>apt-get update</code></p>
+</li>
+<li><p>再执行<code>apt-get install openssh-server</code></p>
+</li>
+<li><p>开启ssh<code>service ssh start</code></p>
+</li>
+<li><p>检测ssh是否启动<code>ps -e | grep ssh</code></p>
+</li>
+</ul>
+<blockquote>
+<p>有sshd,说明ssh服务已经启动，如果没有启动，则输入上面的开启ssh命令</p>
+</blockquote>
+<ul>
+<li>彻底卸载ssh (–purge 指明这个包裹应该被完全清除)<code>apt-get --purge remove openssh-server</code></li>
+</ul>
+<ol start="2">
+<li>切换到<strong>hadoop用户！</strong></li>
+</ol>
+<ul>
+<li><p><code>cd</code></p>
+</li>
+<li><p><code>ssh-keygen -t rsa -P &#39;&#39; -f ~/.ssh/id_rsa</code></p>
+</li>
+<li><p><code>cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</code></p>
+</li>
+<li><p><code>chmod 600 ~/.ssh/authorized_keys</code></p>
+</li>
+</ul>
+<ol start="3">
+<li>以hadoop用户身份，验证本机的无密码ssh <strong>（必须执行以下验证！）</strong></li>
+</ol>
+<ul>
+<li><p><code>ssh hadoop1</code>  </p>
+<blockquote>
+<p>出现下图为正确</p>
+<p><img src="https://i.loli.net/2018/11/25/5bfa3f06cda6c.jpg"></p>
+</blockquote>
+</li>
+<li><p><code>ssh localhost</code> *<em>正确结果同上</em>  </p>
+</li>
+<li><p><code>ssh 0.0.0.0</code> *<em>正确结果同上</em>   </p>
+</li>
+<li><p><code>ssh 127.0.0.1</code> *<em>正确结果同上</em></p>
+</li>
+</ul>
+<ol start="4">
+<li>设置ssh自动启动</li>
+</ol>
+<p>切换到root用户<code>su root</code>，输入密码</p>
+<p>vi <code>~/.bashrc</code></p>
+<p>在最后加上<code>service sshd start</code>，保存</p>
+<p>执行一下.bashrc文件 <code>source ~/.bashrc</code></p>
+<h4 id="12-配置单节点伪分布式（Pseudo-Distributed）Hadoop环境"><a href="#12-配置单节点伪分布式（Pseudo-Distributed）Hadoop环境" class="headerlink" title="12 配置单节点伪分布式（Pseudo-Distributed）Hadoop环境"></a>12 配置单节点伪分布式（Pseudo-Distributed）Hadoop环境</h4><ol>
+<li>配置文件&#x2F;etc&#x2F;hadoop&#x2F;core-site.xml</li>
+</ol>
+<ul>
+<li><p><code>cd /opt/hadoop-2.7.7</code></p>
+</li>
+<li><p><code>vi /opt/hadoop-2.7.7/etc/hadoop/core-site.xml</code></p>
+</li>
+<li><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;hadoop.tmp.dir&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;/home/hadoop/dfs/temp&lt;/value&gt;</span><br><span class="line">        &lt;description&gt;A base for other temporary directories.&lt;/description&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;fs.defaultFS&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;hdfs://hadoop1:9000&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;io.file.buffer.size&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;131072&lt;/value&gt;</span><br><span class="line">        &lt;description&gt;io file buffer size&lt;/description&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">     &lt;property&gt;</span><br><span class="line">        &lt;name&gt;hadoop.proxyuser.hadoop.hosts&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;*&lt;/value&gt;</span><br><span class="line">     &lt;/property&gt;</span><br><span class="line">     &lt;property&gt;</span><br><span class="line">        &lt;name&gt;hadoop.proxyuser.hadoop.groups&lt;/name&gt; </span><br><span class="line">        &lt;value&gt;*&lt;/value&gt;</span><br><span class="line">     &lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="2">
+<li>配置文件etc&#x2F;hadoop&#x2F;hdfs-site.xml</li>
+</ol>
+<ul>
+<li><p><code>cd /opt/hadoop-2.7.7</code></p>
+</li>
+<li><p><code>vi /opt/hadoop-2.7.7/etc/hadoop/hdfs-site.xml</code></p>
+</li>
+<li><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.namenode.name.dir&lt;/name&gt;     </span><br><span class="line">        &lt;value&gt;file:/home/hadoop/dfs/name&lt;/value&gt;     </span><br><span class="line">    &lt;/property&gt; </span><br><span class="line">    &lt;property&gt; </span><br><span class="line">        &lt;name&gt;dfs.datanode.data.dir&lt;/name&gt;      </span><br><span class="line">        &lt;value&gt;file:/home/hadoop/dfs/data&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.replication&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;1&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.webhdfs.enabled&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;true&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.http.address&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;hadoop1:50070&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;dfs.namenode.secondary.http-address&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;hadoop1:50090&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line"></span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="3">
+<li>配置文件etc&#x2F;hadoop&#x2F;slaves</li>
+</ol>
+<p><code>cd /opt/hadoop-2.7.7</code></p>
+<p><code>vi /opt/hadoop-2.7.7/etc/hadoop/slaves</code></p>
+<p>增加<code>hadoop1</code></p>
+<ol start="4">
+<li>创建HDFS使用的Linux目录</li>
+</ol>
+<p>切换到hadoop用户<code>su hadoop</code></p>
+<p><code>mkdir -p /home/hadoop/dfs/name</code></p>
+<p><code>mkdir -p /home/hadoop/dfs/data</code></p>
+<p><code>mkdir -p /home/hadoop/dfs/temp</code></p>
+<blockquote>
+<p>使用 -p 参数来创建多级文件夹</p>
+</blockquote>
+<ol start="5">
+<li>格式化文件系统</li>
+</ol>
+<p><code>hdfs namenode -format</code></p>
+<ol start="6">
+<li>启动HDFS</li>
+</ol>
+<p><code>start-dfs.sh</code></p>
+<blockquote>
+<p>如果报错<code>hadoop1: Error: JAVA_HOME is not set and could not be found.</code>，那么：  </p>
+<ol>
+<li>输入<code>java –version</code>，查看jdk是否安装成功</li>
+<li>输入<code>export</code>，查看jdk环境变量是否设置成功<img src="https://i.loli.net/2018/11/25/5bfa45d5a2a7d.jpg"></li>
+<li>在<code>/opt/hadoop/etc/hadoop/hadoop-env.sh</code>中，再显式地重新声明一遍JAVA_HOME：<br>将<br><code>export JAVA_HOME=$JAVA_HOME</code><br>修改为<br><code>export JAVA_HOME=/usr/lib/jvm/java-8-oracle</code></li>
+</ol>
+</blockquote>
+<p>再尝试开启<code>start-dfs.sh</code></p>
+<p>出现下图为正确：<br><img src="https://i.loli.net/2018/11/25/5bfa482124e9b.jpg"></p>
+<ol start="7">
+<li>浏览NameNode的web接口</li>
+</ol>
+<p>浏览器访问 <a target="_blank" rel="noopener" href="http://202.204.62.145:50070/">http://202.204.62.145:50070/</a></p>
+<p>看到界面：<br><img src="https://i.loli.net/2018/11/25/5bfa4894b40bf.jpg"></p>
+<hr>
+<p><strong>注意以下所有测试命令都要在hadoop用户下执行！！！！！</strong></p>
+<ol start="8">
+<li>查看HDFS启动后的情况<br><code>jps</code></li>
+</ol>
+<p>前面的数字是jvm的进程id，后面是jvm的类启动信息</p>
+<ol start="9">
+<li>在HDFS上创建目录</li>
+</ol>
+<p><code>hdfs dfs -mkdir /user</code></p>
+<p><code>hdfs dfs -mkdir /user/hadoop</code></p>
+<ol start="10">
+<li>测试</li>
+</ol>
+<p><code>cd /opt/hadoop-2.7.7</code></p>
+<p><code>hdfs dfs -put etc/hadoop input</code></p>
+<p><code>hadoop jar /opt/hadoop-2.7.7/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.7.jar grep input output &#39;dfs[a-z.]+&#39;</code></p>
+<p><code>hdfs dfs -get output output</code></p>
+<p><code>hdfs dfs -cat output/*</code></p>
+<p>再清除测试数据</p>
+<p><code>rm -rf output</code></p>
+<p><code>hdfs dfs -rm -r /user/hadoop/input</code></p>
+<p><code>hdfs dfs -rm -r /user/hadoop/output</code></p>
+<ol start="11">
+<li>HDFS集群管理命令</li>
+</ol>
+<p>查看集群状态<code>hdfs dfsadmin -report</code></p>
+<p>查看文件块组成<code>hdfs fsck / -files -blocks</code></p>
+<ol start="12">
+<li>停止HDFS</li>
+</ol>
+<p><code>stop-dfs.sh</code></p>
+<h4 id="13-配置单节点上的YARN"><a href="#13-配置单节点上的YARN" class="headerlink" title="13 配置单节点上的YARN"></a>13 配置单节点上的YARN</h4><ol>
+<li>配置文件&#x2F;opt&#x2F;hadoop-2.7.7&#x2F;etc&#x2F;hadoop&#x2F;mapred-site.xml</li>
+</ol>
+<ul>
+<li><p><code>cd /opt/hadoop-2.7.7/etc/hadoop/</code></p>
+</li>
+<li><p><code>cp mapred-site.xml.template mapred-site.xml</code></p>
+</li>
+<li><p><code>vi /opt/hadoop-2.7.7/etc/hadoop/mapred-site.xml</code></p>
+</li>
+<li><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">       &lt;name&gt;mapreduce.framework.name&lt;/name&gt;</span><br><span class="line">       &lt;value&gt;yarn&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">       &lt;name&gt;mapreduce.jobhistory.address&lt;/name&gt;</span><br><span class="line">       &lt;value&gt;hadoop1:10020&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">       &lt;name&gt;mapreduce.jobhistory.webapp.address&lt;/name&gt;</span><br><span class="line">       &lt;value&gt;hadoop1:19888&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="2">
+<li>配置文件&#x2F;opt&#x2F;hadoop-2.7.7&#x2F;etc&#x2F;hadoop&#x2F;yarn-site.xml</li>
+</ol>
+<ul>
+<li><p><code>cd /opt/hadoop-2.7.7</code></p>
+</li>
+<li><p><code>vi /opt/hadoop-2.7.7/etc/hadoop/yarn-site.xml</code></p>
+</li>
+<li><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;yarn.nodemanager.aux-services&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;mapreduce_shuffle&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;yarn.nodemanager.auxservices.mapreduce.shuffle.class&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;org.apache.hadoop.mapred.ShuffleHandler&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;yarn.resourcemanager.scheduler.address&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;hadoop1:8030&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;yarn.resourcemanager.resource-tracker.address&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;hadoop1:8031&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;yarn.resourcemanager.address&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;hadoop1:8032&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;yarn.resourcemanager.admin.address&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;hadoop1:8033&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;yarn.resourcemanager.webapp.address&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;hadoop1:8088&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">    &lt;property&gt;</span><br><span class="line">        &lt;name&gt;yarn.nodemanager.vmem-pmem-ratio&lt;/name&gt;</span><br><span class="line">        &lt;value&gt;2.5&lt;/value&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line"></span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<ol start="3">
+<li>启动YARN</li>
+</ol>
+<p><code>start-yarn.sh</code></p>
+<blockquote>
+<p>出现如下提示<br><code>localhost: nodemanager running as process 4671. Stop it first.</code><br><code>hadoop1: nodemanager running as process 4671. Stop it first.</code><br>的解决办法:执行<code>stop-all.sh</code><br>再尝试执行<code>start-yarn.sh</code></p>
+</blockquote>
+<p>启动YARN后，再启动HDFS <code>start-dfs.sh</code></p>
+<ol start="4">
+<li>查看启动后的情况</li>
+</ol>
+<p><code>jps</code></p>
+<blockquote>
+<p>结果<br><img src="https://i.loli.net/2018/11/25/5bfa5ce96f0a1.jpg"></p>
+</blockquote>
+<ol start="5">
+<li>浏览ResourceManager的web接口</li>
+</ol>
+<p>浏览器访问 <a target="_blank" rel="noopener" href="http://202.204.62.145:8088/">http://202.204.62.145:8088/</a></p>
+<blockquote>
+<p>结果<br><img src="https://i.loli.net/2018/11/25/5bfa5d39b3c88.jpg"></p>
+</blockquote>
+<ol start="6">
+<li>停止YARN</li>
+</ol>
+<p><code>stop-yarn.sh</code></p>
+<h4 id="14-测试：运行示例程序"><a href="#14-测试：运行示例程序" class="headerlink" title="14 测试：运行示例程序"></a>14 测试：运行示例程序</h4><ol>
+<li>查看可用的实例列表</li>
+</ol>
+<p><code>cd /opt/hadoop/share/hadoop/mapreduce</code></p>
+<p><code>yarn jar ./hadoop-mapreduce-examples-2.7.7.jar</code></p>
+<ol start="2">
+<li>例子1 计算PI</li>
+</ol>
+<p>运行带有2个map和10000000个样本的pi实例</p>
+<p><code>cd /opt/hadoop/share/hadoop/mapreduce</code></p>
+<p><code>yarn jar ./hadoop-mapreduce-examples-2.7.7.jar pi  2 10000000</code></p>
+<ol start="3">
+<li>例子2 运行Terasort测试</li>
+</ol>
+<p>(1) 运行teragen生成随机数据用于排序</p>
+<p><code>cd /opt/hadoop/share/hadoop/mapreduce</code></p>
+<p><code>yarn jar hadoop-mapreduce-examples-2.7.7.jar teragen 10000 /user/terasort</code></p>
+<blockquote>
+<p>10000表示10000KB&#x3D;10MB</p>
+</blockquote>
+<p>注意再次进行实验(1)需要删除&#x2F;user&#x2F;terasort</p>
+<p><code>hdfs dfs -ls /user</code></p>
+<p><code>hdfs dfs -rm  -r  /user/terasort</code></p>
+<p>(2) 运行terasort对数据进行排序</p>
+<p>创建结果目录 <code>hdfs dfs -mkdir  /user/terasortResult</code></p>
+<p><code>cd /opt/hadoop/share/hadoop/mapreduce</code></p>
+<p><code>yarn jar hadoop-mapreduce-examples-2.7.7.jar terasort \</code></p>
+<p><code>/user/terasort   /user/terasortResult</code></p>
+<p>(3) 验证排序后的teragen</p>
+<p><code>cd /opt/hadoop/share/hadoop/mapreduce</code></p>
+<p><code>yarn jar hadoop-mapreduce-examples-2.7.7.jar teravalidate \</code></p>
+<p><code>/user/terasortResult /user/terasortvalidate</code></p>
+<p>(4) 删除测试用目录</p>
+<p><code>hdfs dfs -rm  -r  /user/terasort</code></p>
+<p><code>hdfs dfs -rm  -r  /user/terasortResult</code></p>
+<p><code>hdfs dfs -rm  -r  /user/terasortvalidate</code></p>
+<ol start="4">
+<li>例子3 DFS IO基准测试</li>
+</ol>
+<p>在写模式下运行名为TestDFSIO的HDFS基准测试应用程序:<br>运行带有2个128MB文件</p>
+<p><code>cd /opt/hadoop/share/hadoop/mapreduce</code></p>
+<p><code>yarn jar hadoop-mapreduce-client-jobclient-2.7.7-tests.jar TestDFSIO \</code></p>
+<p><code>-write -nrFiles 2 -fileSize 128</code></p>
+<p>在读模式下运行TestDFSIO<br><code>cd /opt/hadoop/share/hadoop/mapreduce</code></p>
+<p><code>yarn jar hadoop-mapreduce-client-jobclient-2.7.7-tests.jar TestDFSIO \</code></p>
+<p><code>-read -nrFiles 2 -fileSize 128</code></p>
+<p>清理刚才的数据<br><code>cd /opt/hadoop/share/hadoop/mapreduce</code></p>
+<p><code>yarn jar hadoop-mapreduce-client-jobclient-2.7.7-tests.jar TestDFSIO \</code></p>
+<p><code>-clean</code></p>
+<h4 id="15-制作docker镜像"><a href="#15-制作docker镜像" class="headerlink" title="15 制作docker镜像"></a>15 制作docker镜像</h4><ol>
+<li>在容器里<ul>
+<li><code>stop-all.sh</code></li>
+</ul>
+</li>
+<li>退出容器，但不关闭<code>ctrl+P+Q</code></li>
+<li>制作镜像<code>docker commit -m &quot;hadoop install&quot; 333a ubuntu:hadoop</code></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/BigData%EF%BC%88%E5%A4%A7%E6%95%B0%E6%8D%AE%EF%BC%89/" rel="tag"># BigData（大数据）</a>
+              <a href="/tags/Hadoop/" rel="tag"># Hadoop</a>
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/11/27/Hexo%E7%9B%B8%E5%85%B3%E6%96%87%E6%A1%A3/" rel="prev" title="Hexo相关文档">
+                  <i class="fa fa-chevron-left"></i> Hexo相关文档
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/11/28/%E6%90%9E%E7%A7%91%E7%A0%94%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7/" rel="next" title="搞科研常用工具">
+                  搞科研常用工具 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jacen Chou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

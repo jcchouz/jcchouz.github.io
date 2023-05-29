@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="制作镜像 在容器里 切换到root用户su，输入密码 service opentsdb stop 切换到hadoop用户su hadoop stop-hbase.sh stop-all.sh   退出容器，但不关闭ctrl+P+Q 制作镜像docker commit -m &quot;thrift installed&quot; 5ac0 ubuntu:thrift">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BigData-新建HBase容器要做的事">
+<meta property="og:url" content="http://example.com/2018/11/30/BigData-%E6%96%B0%E5%BB%BAHBase%E5%AE%B9%E5%99%A8%E8%A6%81%E5%81%9A%E7%9A%84%E4%BA%8B/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="制作镜像 在容器里 切换到root用户su，输入密码 service opentsdb stop 切换到hadoop用户su hadoop stop-hbase.sh stop-all.sh   退出容器，但不关闭ctrl+P+Q 制作镜像docker commit -m &quot;thrift installed&quot; 5ac0 ubuntu:thrift">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2018-11-30T02:47:06.000Z">
+<meta property="article:modified_time" content="2023-05-29T16:15:40.959Z">
+<meta property="article:author" content="Jacen Chou">
+<meta property="article:tag" content="BigData（大数据）">
+<meta property="article:tag" content="HBase">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2018/11/30/BigData-%E6%96%B0%E5%BB%BAHBase%E5%AE%B9%E5%99%A8%E8%A6%81%E5%81%9A%E7%9A%84%E4%BA%8B/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2018/11/30/BigData-%E6%96%B0%E5%BB%BAHBase%E5%AE%B9%E5%99%A8%E8%A6%81%E5%81%9A%E7%9A%84%E4%BA%8B/","path":"2018/11/30/BigData-新建HBase容器要做的事/","title":"BigData-新建HBase容器要做的事"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>BigData-新建HBase容器要做的事 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%B6%E4%BD%9C%E9%95%9C%E5%83%8F"><span class="nav-number">1.</span> <span class="nav-text">制作镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%81%9C%E6%AD%A2%E5%8E%9F%E6%9D%A5%E7%9A%84%E5%AE%B9%E5%99%A8%EF%BC%8C%E9%87%8A%E6%94%BE%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">停止原来的容器，释放端口占用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B0%E5%BB%BA%E5%AE%B9%E5%99%A8"><span class="nav-number">3.</span> <span class="nav-text">新建容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9B%E5%85%A5%E5%AE%B9%E5%99%A8"><span class="nav-number">4.</span> <span class="nav-text">进入容器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-x2F-etc-x2F-hosts%E6%96%87%E4%BB%B6%EF%BC%8C%E5%8A%A0%E5%85%A5hadoop1"><span class="nav-number">5.</span> <span class="nav-text">配置&#x2F;etc&#x2F;hosts文件，加入hadoop1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%80%E5%90%AFssh"><span class="nav-number">6.</span> <span class="nav-text">开启ssh</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95ssh"><span class="nav-number">7.</span> <span class="nav-text">测试ssh</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A0%E9%99%A4HDFS%E4%BD%BF%E7%94%A8%E7%9A%84Linux%E7%9B%AE%E5%BD%95"><span class="nav-number">8.</span> <span class="nav-text">删除HDFS使用的Linux目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%BC%E5%BC%8F%E5%8C%96%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="nav-number">9.</span> <span class="nav-text">格式化文件系统</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%80%E5%90%AFHadoop%E3%80%81HBase"><span class="nav-number">10.</span> <span class="nav-text">开启Hadoop、HBase</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%80%E5%90%AFthrift"><span class="nav-number">11.</span> <span class="nav-text">开启thrift</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Jacen Chou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/11/30/BigData-%E6%96%B0%E5%BB%BAHBase%E5%AE%B9%E5%99%A8%E8%A6%81%E5%81%9A%E7%9A%84%E4%BA%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jacen Chou">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="BigData-新建HBase容器要做的事 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          BigData-新建HBase容器要做的事
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2018-11-30 10:47:06" itemprop="dateCreated datePublished" datetime="2018-11-30T10:47:06+08:00">2018-11-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-05-30 00:15:40" itemprop="dateModified" datetime="2023-05-30T00:15:40+08:00">2023-05-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/BigData%EF%BC%88%E5%A4%A7%E6%95%B0%E6%8D%AE%EF%BC%89/" itemprop="url" rel="index"><span itemprop="name">BigData（大数据）</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/BigData%EF%BC%88%E5%A4%A7%E6%95%B0%E6%8D%AE%EF%BC%89/HBase/" itemprop="url" rel="index"><span itemprop="name">HBase</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h4 id="制作镜像"><a href="#制作镜像" class="headerlink" title="制作镜像"></a>制作镜像</h4><ol>
+<li>在容器里<ul>
+<li>切换到root用户<code>su</code>，输入密码</li>
+<li><code>service opentsdb stop</code></li>
+<li>切换到hadoop用户<code>su hadoop</code></li>
+<li><code>stop-hbase.sh</code></li>
+<li><code>stop-all.sh</code></li>
+</ul>
+</li>
+<li>退出容器，但不关闭<code>ctrl+P+Q</code></li>
+<li>制作镜像<code>docker commit -m &quot;thrift installed&quot; 5ac0 ubuntu:thrift</code></li>
+</ol>
+<span id="more"></span>
+
+<h4 id="停止原来的容器，释放端口占用"><a href="#停止原来的容器，释放端口占用" class="headerlink" title="停止原来的容器，释放端口占用"></a>停止原来的容器，释放端口占用</h4><p><code>docker stop 5ac0</code></p>
+<h4 id="新建容器"><a href="#新建容器" class="headerlink" title="新建容器"></a>新建容器</h4><p><code>docker run -itd -p 2181:2181 -p 4242:4242 -p 8088:8088 -p 9000:9000 -p 9090:9090 -p 16000:16000 -p 16010:16010 -p 16201:16201 -p 16301:16301 -p 50020:50020 -p 50070:50070 ubuntu:thrift</code></p>
+<h4 id="进入容器"><a href="#进入容器" class="headerlink" title="进入容器"></a>进入容器</h4><p><code>docker exec -it $container_id /bin/bash</code></p>
+<h4 id="配置-x2F-etc-x2F-hosts文件，加入hadoop1"><a href="#配置-x2F-etc-x2F-hosts文件，加入hadoop1" class="headerlink" title="配置&#x2F;etc&#x2F;hosts文件，加入hadoop1"></a>配置&#x2F;etc&#x2F;hosts文件，加入hadoop1</h4><p><strong>root</strong>身份下执行</p>
+<p>查看ip地址<code>ifconfig</code></p>
+<p><code>vi /etc/hosts</code></p>
+<p>加入：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#Hadoop Name Node</span><br><span class="line">$container_ip  hadoop1</span><br></pre></td></tr></table></figure>
+
+<h4 id="开启ssh"><a href="#开启ssh" class="headerlink" title="开启ssh"></a>开启ssh</h4><p><strong>root</strong>身份下执行</p>
+<p><code>service ssh start</code></p>
+<h4 id="测试ssh"><a href="#测试ssh" class="headerlink" title="测试ssh"></a>测试ssh</h4><ol>
+<li>切换到hadoop用户<code>su hadoop</code></li>
+<li><code>ssh hadoop1</code></li>
+</ol>
+<h4 id="删除HDFS使用的Linux目录"><a href="#删除HDFS使用的Linux目录" class="headerlink" title="删除HDFS使用的Linux目录"></a>删除HDFS使用的Linux目录</h4><p><strong>hadoop</strong>身份下执行</p>
+<p><del>rm -rf &#x2F;home&#x2F;hadoop&#x2F;dfs&#x2F;data&#x2F;*</del></p>
+<p><del>rm -rf &#x2F;home&#x2F;hadoop&#x2F;dfs&#x2F;name&#x2F;*</del></p>
+<p><del>rm -rf &#x2F;home&#x2F;hadoop&#x2F;dfs&#x2F;temp&#x2F;*</del></p>
+<h4 id="格式化文件系统"><a href="#格式化文件系统" class="headerlink" title="格式化文件系统"></a>格式化文件系统</h4><p><code>hdfs namenode -format</code></p>
+<h4 id="开启Hadoop、HBase"><a href="#开启Hadoop、HBase" class="headerlink" title="开启Hadoop、HBase"></a>开启Hadoop、HBase</h4><p><strong>hadoop</strong>身份下执行</p>
+<ol>
+<li><code>start-all.sh</code></li>
+<li><code>start-hbase.sh</code></li>
+</ol>
+<h4 id="开启thrift"><a href="#开启thrift" class="headerlink" title="开启thrift"></a>开启thrift</h4><p><code>/opt/hbase-1.4.8/bin/hbase-daemon.sh start thrift</code></p>
+<p><del><strong>#### 开启OpenTSDB</strong></del></p>
+<p><del>1. 切换到root用户<code>su</code>，输入密码</del></p>
+<p><del>2. <code>service opentsdb start</code></del></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/BigData%EF%BC%88%E5%A4%A7%E6%95%B0%E6%8D%AE%EF%BC%89/" rel="tag"># BigData（大数据）</a>
+              <a href="/tags/HBase/" rel="tag"># HBase</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/11/30/Git%E5%91%BD%E4%BB%A4/" rel="prev" title="Git命令">
+                  <i class="fa fa-chevron-left"></i> Git命令
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/12/02/BigData-5-OpenTSDB%E4%B8%8B%E8%BD%BD%E3%80%81%E5%AE%89%E8%A3%85%E3%80%81%E9%85%8D%E7%BD%AE/" rel="next" title="BigData-5-OpenTSDB下载、安装、配置">
+                  BigData-5-OpenTSDB下载、安装、配置 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jacen Chou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

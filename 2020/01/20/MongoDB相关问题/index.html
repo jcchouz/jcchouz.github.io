@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="问题一问题描述MongoDB中的几种权限 解决方案角色安全权限访问控制： Read：允许用户读取指定数据库 readWrite：允许用户读写指定数据库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MongoDB相关问题">
+<meta property="og:url" content="http://example.com/2020/01/20/MongoDB%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="问题一问题描述MongoDB中的几种权限 解决方案角色安全权限访问控制： Read：允许用户读取指定数据库 readWrite：允许用户读写指定数据库">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.loli.net/2019/01/20/5c447f42b9786.jpg">
+<meta property="article:published_time" content="2020-01-20T02:38:01.000Z">
+<meta property="article:modified_time" content="2023-05-29T17:09:29.387Z">
+<meta property="article:author" content="Jacen Chou">
+<meta property="article:tag" content="MongoDB">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2019/01/20/5c447f42b9786.jpg">
+
+
+<link rel="canonical" href="http://example.com/2020/01/20/MongoDB%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2020/01/20/MongoDB%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98/","path":"2020/01/20/MongoDB相关问题/","title":"MongoDB相关问题"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>MongoDB相关问题 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%B8%80"><span class="nav-number">1.</span> <span class="nav-text">问题一</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">解决方案</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E7%BD%91%E5%9D%80"><span class="nav-number">1.0.0.3.</span> <span class="nav-text">参考网址</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%BA%8C"><span class="nav-number">2.</span> <span class="nav-text">问题二</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0-1"><span class="nav-number">2.0.0.1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-1"><span class="nav-number">2.0.0.2.</span> <span class="nav-text">解决方案</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E4%B8%89"><span class="nav-number">3.</span> <span class="nav-text">问题三</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0-2"><span class="nav-number">3.0.0.1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-2"><span class="nav-number">3.0.0.2.</span> <span class="nav-text">解决方案</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E7%BD%91%E5%9D%80-1"><span class="nav-number">3.0.0.3.</span> <span class="nav-text">参考网址</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E5%9B%9B"><span class="nav-number">4.</span> <span class="nav-text">问题四</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0-3"><span class="nav-number">4.0.0.1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-3"><span class="nav-number">4.0.0.2.</span> <span class="nav-text">解决方案</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E7%BD%91%E5%9D%80-2"><span class="nav-number">4.0.0.3.</span> <span class="nav-text">参考网址</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9A%E6%97%B6%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE"><span class="nav-number">5.</span> <span class="nav-text">定时删除数据</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Jacen Chou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/01/20/MongoDB%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jacen Chou">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="MongoDB相关问题 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MongoDB相关问题
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-01-20 10:38:01" itemprop="dateCreated datePublished" datetime="2020-01-20T10:38:01+08:00">2020-01-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-05-30 01:09:29" itemprop="dateModified" datetime="2023-05-30T01:09:29+08:00">2023-05-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/MongoDB/" itemprop="url" rel="index"><span itemprop="name">MongoDB</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="问题一"><a href="#问题一" class="headerlink" title="问题一"></a>问题一</h1><h4 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h4><p>MongoDB中的几种权限</p>
+<h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>角色安全权限访问控制：</p>
+<p>Read：允许用户读取指定数据库</p>
+<p>readWrite：允许用户读写指定数据库</p>
+<span id="more"></span>
+
+<p>dbAdmin：允许用户在指定数据库中执行管理函数，如索引创建、删除，查看统计或访问system.profile</p>
+<p>userAdmin：允许用户向system.users集合写入，可以找指定数据库里创建、删除和管理用户</p>
+<p>clusterAdmin：只在admin数据库中可用，赋予用户所有分片和复制集相关函数的管理权限。</p>
+<p>readAnyDatabase：只在admin数据库中可用，赋予用户所有数据库的读权限</p>
+<p>readWriteAnyDatabase：只在admin数据库中可用，赋予用户所有数据库的读写权限</p>
+<p>userAdminAnyDatabase：只在admin数据库中可用，赋予用户所有数据库的userAdmin权限</p>
+<p>dbAdminAnyDatabase：只在admin数据库中可用，赋予用户所有数据库的dbAdmin权限。</p>
+<p>root：只在admin数据库中可用。超级账号，超级权限</p>
+<h4 id="参考网址"><a href="#参考网址" class="headerlink" title="参考网址"></a>参考网址</h4><blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/zmx729618/article/details/52091804">https://blog.csdn.net/zmx729618/article/details/52091804</a><br><a target="_blank" rel="noopener" href="https://www.2cto.com/database/201507/420854.html">https://www.2cto.com/database/201507/420854.html</a></p>
+</blockquote>
+<h1 id="问题二"><a href="#问题二" class="headerlink" title="问题二"></a>问题二</h1><h4 id="问题描述-1"><a href="#问题描述-1" class="headerlink" title="问题描述"></a>问题描述</h4><p>出现’Unclean full-time diagnostic data capture shutdown detected, found interim file, some metrics may have been lost.’</p>
+<h4 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h4><p><code>rm -f /var/lib/mongo/diagnostic.data/*</code></p>
+<h1 id="问题三"><a href="#问题三" class="headerlink" title="问题三"></a>问题三</h1><h4 id="问题描述-2"><a href="#问题描述-2" class="headerlink" title="问题描述"></a>问题描述</h4><p>错误提示：</p>
+<p>‘listen(): bind() failed errno:98 Address already in use for socket: 0.0.0.0:27017’<br>‘addr already in use’</p>
+<h4 id="解决方案-2"><a href="#解决方案-2" class="headerlink" title="解决方案"></a>解决方案</h4><p><code>ps aux | grep mongod</code></p>
+<p>找到对应进程id,杀死:</p>
+<p><code>kill -9 pid</code></p>
+<p>如下图：<br><img src="https://i.loli.net/2019/01/20/5c447f42b9786.jpg"></p>
+<h4 id="参考网址-1"><a href="#参考网址-1" class="headerlink" title="参考网址"></a>参考网址</h4><blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wjw-blog/p/5995237.html">https://www.cnblogs.com/wjw-blog/p/5995237.html</a></p>
+</blockquote>
+<h1 id="问题四"><a href="#问题四" class="headerlink" title="问题四"></a>问题四</h1><h4 id="问题描述-3"><a href="#问题描述-3" class="headerlink" title="问题描述"></a>问题描述</h4><p>后端对数据排序、分页时报错：</p>
+<p><code>pymongo.errors.OperationFailure: Executor error during find command :: caused by :: Sort operation used more than the maximum 33554432 bytes of RAM. Add an index, or specify a smaller limit.</code></p>
+<p>按照错误提示，知道这是排序的时候报的错，因为 mongo 的 sort 操作是在内存中操作的，必然会占据内存，同时mongo 内的一个机制限制排序时最大内存为 32M，当排序的数据量超过 32M,就会报上面的这个错，解决办法就像上面提示的意思：</p>
+<p>一是加大 mongo的排序内存，这个一般是运维来管，也有弊端，就是数据量如果再大，还要往上加。</p>
+<p>另一个办法就是加索引，这个方法还是挺方便的。创建索引及时生效，不需要重启服务。</p>
+<h4 id="解决方案-3"><a href="#解决方案-3" class="headerlink" title="解决方案"></a>解决方案</h4><p>创建索引：</p>
+<ol>
+<li><code>db.你的collection.createIndex(&#123;&quot;你的字段&quot;: -1&#125;)</code>，此处 -1 代表倒序，1 代表正序</li>
+<li><code>db.你的collecton.getIndexes()</code></li>
+</ol>
+<p>实际操作：</p>
+<ol>
+<li>按时间索引，且倒序，最新的在最前面：<code>db.gms_monitor.createIndex(&#123;time:-1&#125;)</code></li>
+<li>查询gms_monitor表的索引：<code>db.gms_monitor.getIndexes()</code></li>
+</ol>
+<h4 id="参考网址-2"><a href="#参考网址-2" class="headerlink" title="参考网址"></a>参考网址</h4><blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/kdc18333608478/article/details/74635838">https://blog.csdn.net/kdc18333608478/article/details/74635838</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/zzq900503/article/details/78666865">https://blog.csdn.net/zzq900503/article/details/78666865</a></p>
+</blockquote>
+<h1 id="定时删除数据"><a href="#定时删除数据" class="headerlink" title="定时删除数据"></a>定时删除数据</h1><p><code>db.gms_monitor.createIndex(&#123;&quot;time&quot;:1&#125;, &#123;expireAfterSeconds: 7776000&#125;)</code></p>
+<p>gms_monitor:collection名<br>time:字段名<br>7776000:有效时间（秒）</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/MongoDB/" rel="tag"># MongoDB</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/01/17/Tenda-U3%E6%97%A0%E7%BA%BF%E7%BD%91%E5%8D%A1%E5%AE%89%E8%A3%85%E5%8F%8A%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97-Linux/" rel="prev" title="Tenda-U3无线网卡安装及使用指南-Linux">
+                  <i class="fa fa-chevron-left"></i> Tenda-U3无线网卡安装及使用指南-Linux
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/07/01/virtualenv-Python%E5%88%9B%E5%BB%BA%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/" rel="next" title="virtualenv-Python创建虚拟环境">
+                  virtualenv-Python创建虚拟环境 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jacen Chou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

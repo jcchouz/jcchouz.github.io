@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="服务端（必须）安装ssh服务端sudo apt-get install openssh-server 确认sshserver是否启动了ps -e | grep ssh 如果只有ssh-agent那ssh-server还没有启动，需要&#x2F;etc&#x2F;init.d&#x2F;ssh start，如果看到sshd那说明ssh-server已经启动了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux配置SSH">
+<meta property="og:url" content="http://example.com/2022/01/12/Linux%E9%85%8D%E7%BD%AEssh/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="服务端（必须）安装ssh服务端sudo apt-get install openssh-server 确认sshserver是否启动了ps -e | grep ssh 如果只有ssh-agent那ssh-server还没有启动，需要&#x2F;etc&#x2F;init.d&#x2F;ssh start，如果看到sshd那说明ssh-server已经启动了">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-01-12T05:48:57.000Z">
+<meta property="article:modified_time" content="2023-05-29T17:09:20.057Z">
+<meta property="article:author" content="Jacen Chou">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="SSH">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2022/01/12/Linux%E9%85%8D%E7%BD%AEssh/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2022/01/12/Linux%E9%85%8D%E7%BD%AEssh/","path":"2022/01/12/Linux配置ssh/","title":"Linux配置SSH"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Linux配置SSH | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%EF%BC%88%E5%BF%85%E9%A1%BB%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">服务端（必须）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85ssh%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">安装ssh服务端</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A1%AE%E8%AE%A4sshserver%E6%98%AF%E5%90%A6%E5%90%AF%E5%8A%A8%E4%BA%86"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">确认sshserver是否启动了</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8sshserver"><span class="nav-number">1.0.0.3.</span> <span class="nav-text">启动sshserver</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SSH%E9%85%8D%E7%BD%AE%EF%BC%88%E5%A6%82%E6%9E%9C%E9%9C%80%E8%A6%81%EF%BC%89"><span class="nav-number">1.0.0.4.</span> <span class="nav-text">SSH配置（如果需要）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%87%8D%E5%90%AFsshserver"><span class="nav-number">1.0.0.5.</span> <span class="nav-text">重启sshserver</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%EF%BC%88%E9%9D%9E%E5%BF%85%E9%A1%BB%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">客户端（非必须）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E5%AE%A2%E6%88%B7%E7%AB%AF%EF%BC%88%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%B8%8D%E6%98%AF%E5%BF%85%E9%A1%BB%E7%9A%84%EF%BC%89"><span class="nav-number">2.0.0.1.</span> <span class="nav-text">安装客户端（客户端不是必须的）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A6%82%E6%9E%9C%E5%AE%89%E8%A3%85%E5%A4%B1%E8%B4%A5%EF%BC%8C%E5%88%99%E4%BD%BF%E7%94%A8%E4%B8%8B%E9%9D%A2%E5%91%BD%E4%BB%A4%E8%BF%9B%E8%A1%8C%E5%AE%89%E8%A3%85"><span class="nav-number">2.0.0.2.</span> <span class="nav-text">如果安装失败，则使用下面命令进行安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SSH%E7%99%BB%E5%BD%95%EF%BC%88%E5%AE%A2%E6%88%B7%E7%AB%AF%EF%BC%89"><span class="nav-number">2.0.0.3.</span> <span class="nav-text">SSH登录（客户端）</span></a></li></ol></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Jacen Chou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/01/12/Linux%E9%85%8D%E7%BD%AEssh/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jacen Chou">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Linux配置SSH | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux配置SSH
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-01-12 13:48:57" itemprop="dateCreated datePublished" datetime="2022-01-12T13:48:57+08:00">2022-01-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-05-30 01:09:20" itemprop="dateModified" datetime="2023-05-30T01:09:20+08:00">2023-05-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Linux/SSH/" itemprop="url" rel="index"><span itemprop="name">SSH</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="服务端（必须）"><a href="#服务端（必须）" class="headerlink" title="服务端（必须）"></a>服务端（必须）</h1><h4 id="安装ssh服务端"><a href="#安装ssh服务端" class="headerlink" title="安装ssh服务端"></a>安装ssh服务端</h4><p><code>sudo apt-get install openssh-server</code></p>
+<h4 id="确认sshserver是否启动了"><a href="#确认sshserver是否启动了" class="headerlink" title="确认sshserver是否启动了"></a>确认sshserver是否启动了</h4><p><code>ps -e | grep ssh</code></p>
+<p>如果只有ssh-agent那ssh-server还没有启动，需要<code>/etc/init.d/ssh start</code>，如果看到sshd那说明ssh-server已经启动了</p>
+<span id="more"></span>
+
+<h4 id="启动sshserver"><a href="#启动sshserver" class="headerlink" title="启动sshserver"></a>启动sshserver</h4><p><code>/etc/init.d/ssh start</code></p>
+<h4 id="SSH配置（如果需要）"><a href="#SSH配置（如果需要）" class="headerlink" title="SSH配置（如果需要）"></a>SSH配置（如果需要）</h4><p>修改配置文件&#x2F;etc&#x2F;ssh&#x2F;sshd_config，这里可以定义SSH的服务端口，默认端口是22，你可以自己定义成其他端口号如32，然后重启服务</p>
+<h4 id="重启sshserver"><a href="#重启sshserver" class="headerlink" title="重启sshserver"></a>重启sshserver</h4><p><code>/etc/init.d/ssh restart</code></p>
+<h1 id="客户端（非必须）"><a href="#客户端（非必须）" class="headerlink" title="客户端（非必须）"></a>客户端（非必须）</h1><h4 id="安装客户端（客户端不是必须的）"><a href="#安装客户端（客户端不是必须的）" class="headerlink" title="安装客户端（客户端不是必须的）"></a>安装客户端（客户端不是必须的）</h4><p>apt-get install ssh</p>
+<h4 id="如果安装失败，则使用下面命令进行安装"><a href="#如果安装失败，则使用下面命令进行安装" class="headerlink" title="如果安装失败，则使用下面命令进行安装"></a>如果安装失败，则使用下面命令进行安装</h4><p>apt-get install openssh-client</p>
+<h4 id="SSH登录（客户端）"><a href="#SSH登录（客户端）" class="headerlink" title="SSH登录（客户端）"></a>SSH登录（客户端）</h4><p>ssh 192.168.159.128</p>
+<p>ssh -l cookie 192.168.152.10</p>
+<p>ssh <a href="mailto:&#99;&#111;&#111;&#x6b;&#x69;&#101;&#64;&#x31;&#57;&#x32;&#46;&#49;&#54;&#56;&#46;&#x31;&#53;&#x32;&#46;&#49;&#48;">&#99;&#111;&#111;&#x6b;&#x69;&#101;&#64;&#x31;&#57;&#x32;&#46;&#49;&#54;&#56;&#46;&#x31;&#53;&#x32;&#46;&#49;&#48;</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+              <a href="/tags/SSH/" rel="tag"># SSH</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/01/06/%E7%A3%81%E7%9B%98%E5%88%A0%E9%99%A4OEM%E5%88%86%E5%8C%BA/" rel="prev" title="磁盘删除OEM分区">
+                  <i class="fa fa-chevron-left"></i> 磁盘删除OEM分区
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/01/12/win10%20win+R%E6%94%B9%E4%B8%BA%E4%BB%A5%E7%AE%A1%E7%90%86%E5%91%98%E8%BF%90%E8%A1%8C/" rel="next" title="Win10-Win+R改为以管理员运行">
+                  Win10-Win+R改为以管理员运行 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jacen Chou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

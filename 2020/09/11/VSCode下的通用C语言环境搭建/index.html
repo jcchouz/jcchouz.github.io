@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="版权声明：本文为博主原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明。本文链接：https:&#x2F;&#x2F;www.cnblogs.com&#x2F;czlhxm&#x2F;p&#x2F;11794743.html参考博客：整理：Visual Studio Code (vscode) 配置C、C++环境&#x2F;编写运行C、C++（主要Windows、简要Linux）  主要流程 vscode的下载与">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Visual Studio Code(VSCode)下的通用C语言环境搭建">
+<meta property="og:url" content="http://example.com/2020/09/11/VSCode%E4%B8%8B%E7%9A%84%E9%80%9A%E7%94%A8C%E8%AF%AD%E8%A8%80%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="版权声明：本文为博主原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明。本文链接：https:&#x2F;&#x2F;www.cnblogs.com&#x2F;czlhxm&#x2F;p&#x2F;11794743.html参考博客：整理：Visual Studio Code (vscode) 配置C、C++环境&#x2F;编写运行C、C++（主要Windows、简要Linux）  主要流程 vscode的下载与">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.loli.net/2020/09/11/LvHFOyNeXtiBSZx.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/11/MkLKrJnyvpgFW3u.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/11/MGQSZ4hI9LEczHb.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/11/Xl6W8pBMTcqJoay.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/11/ElgD2YS7a1uqAx5.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/11/wlRa6ZmkeUx7YHz.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/11/KT4fIOxpQN7J5bz.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/11/alOMEf3dtzjSFPY.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/11/W1LpMIteQKcJdzE.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/11/8aqw534hpHvzV2c.png">
+<meta property="og:image" content="https://i.loli.net/2020/09/11/TPeYJjgiVcwfWMm.png">
+<meta property="article:published_time" content="2020-09-11T06:42:55.000Z">
+<meta property="article:modified_time" content="2023-05-29T16:15:40.994Z">
+<meta property="article:author" content="Jacen Chou">
+<meta property="article:tag" content="Visual Studio Code">
+<meta property="article:tag" content="C">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/09/11/LvHFOyNeXtiBSZx.png">
+
+
+<link rel="canonical" href="http://example.com/2020/09/11/VSCode%E4%B8%8B%E7%9A%84%E9%80%9A%E7%94%A8C%E8%AF%AD%E8%A8%80%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2020/09/11/VSCode%E4%B8%8B%E7%9A%84%E9%80%9A%E7%94%A8C%E8%AF%AD%E8%A8%80%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/","path":"2020/09/11/VSCode下的通用C语言环境搭建/","title":"Visual Studio Code(VSCode)下的通用C语言环境搭建"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Visual Studio Code(VSCode)下的通用C语言环境搭建 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Hexo</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E6%B5%81%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">主要流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-vscode%E7%9A%84%E4%B8%8B%E8%BD%BD%E4%B8%8E%E7%AE%80%E5%8D%95%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">1.vscode的下载与简单配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-MinGw%E7%9A%84%E4%B8%8B%E8%BD%BD%E4%B8%8E%E5%AE%89%E8%A3%85"><span class="nav-number">3.</span> <span class="nav-text">2.MinGw的下载与安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E9%85%8D%E7%BD%AE%E7%B3%BB%E7%BB%9F%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8FPath"><span class="nav-number">4.</span> <span class="nav-text">3.配置系统环境变量Path</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E4%BF%AE%E6%94%B9vscode%E8%B0%83%E8%AF%95%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">5.</span> <span class="nav-text">4.修改vscode调试配置文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-vscode%E4%B8%8B%E5%BC%80%E5%8F%91C%E9%A1%B9%E7%9B%AE%E7%9A%84%E4%BD%BF%E7%94%A8%E7%BB%86%E8%8A%82"><span class="nav-number">6.</span> <span class="nav-text">5.vscode下开发C项目的使用细节</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-%E9%80%9A%E7%94%A8%E7%9A%84C%E8%AF%AD%E8%A8%80debug%E6%96%B9%E6%B3%95"><span class="nav-number">7.</span> <span class="nav-text">6.通用的C语言debug方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E4%B8%8E%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-%E4%B8%8D%E5%AE%9A%E6%97%B6%E6%9B%B4%E6%96%B0"><span class="nav-number">8.</span> <span class="nav-text">7.常见问题与解决方案(不定时更新)</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Jacen Chou</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">55</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/09/11/VSCode%E4%B8%8B%E7%9A%84%E9%80%9A%E7%94%A8C%E8%AF%AD%E8%A8%80%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jacen Chou">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Visual Studio Code(VSCode)下的通用C语言环境搭建 | Hexo">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Visual Studio Code(VSCode)下的通用C语言环境搭建
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-09-11 14:42:55" itemprop="dateCreated datePublished" datetime="2020-09-11T14:42:55+08:00">2020-09-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-05-30 00:15:40" itemprop="dateModified" datetime="2023-05-30T00:15:40+08:00">2023-05-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Visual-Studio-Code/" itemprop="url" rel="index"><span itemprop="name">Visual Studio Code</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>版权声明：本文为博主原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明。<br>本文链接：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/czlhxm/p/11794743.html">https://www.cnblogs.com/czlhxm/p/11794743.html</a><br>参考博客：整理：Visual Studio Code (vscode) 配置C、C++环境&#x2F;编写运行C、C++（主要Windows、简要Linux）</p>
+</blockquote>
+<h1 id="主要流程"><a href="#主要流程" class="headerlink" title="主要流程"></a>主要流程</h1><ol>
+<li>vscode的下载与简单配置</li>
+<li>MinGw的下载与安装</li>
+<li>配置系统环境变量</li>
+<li>修改vscode调试配置文件</li>
+<li>vscode下开发C项目的使用细节</li>
+<li>通用的C语言debug方法</li>
+<li>常见问题与解决方案(不定时更新)</li>
+</ol>
+<span id="more"></span>
+
+<h1 id="1-vscode的下载与简单配置"><a href="#1-vscode的下载与简单配置" class="headerlink" title="1.vscode的下载与简单配置"></a>1.vscode的下载与简单配置</h1><p><a target="_blank" rel="noopener" href="https://code.visualstudio.com/Download">https://code.visualstudio.com/Download</a></p>
+<h1 id="2-MinGw的下载与安装"><a href="#2-MinGw的下载与安装" class="headerlink" title="2.MinGw的下载与安装"></a>2.MinGw的下载与安装</h1><p>因为windows下vscode不直接具备对于C语言的编译调试工具，所以要下载集成gcc等工具的MinGw以提供扩展支持。</p>
+<p><a target="_blank" rel="noopener" href="https://sourceforge.net/projects/mingw-w64/files/">https://sourceforge.net/projects/mingw-w64/files/</a></p>
+<p>下载：<code>x86_64-posix-seh</code></p>
+<p><img src="https://i.loli.net/2020/09/11/LvHFOyNeXtiBSZx.png" alt="image.png"></p>
+<p>将压缩包内的<code>mingw64</code>，解压出来到<code>C:\Program Files (x86)</code>，并重命名<code>MinGW</code></p>
+<h1 id="3-配置系统环境变量Path"><a href="#3-配置系统环境变量Path" class="headerlink" title="3.配置系统环境变量Path"></a>3.配置系统环境变量Path</h1><p>打开我的电脑-属性-高级系统设置-高级-环境变量<br>以下配置均为<em><strong>系统变量<br>!!!</strong></em></p>
+<ul>
+<li>在Path变量中，增加<code>C:\Program Files (x86)\MinGW\bin</code></li>
+</ul>
+<p><img src="https://i.loli.net/2020/09/11/MkLKrJnyvpgFW3u.png" alt="image.png"></p>
+<ul>
+<li>新加INCLUDE变量，值为<code>C:\Program Files (x86)\MinGW\include</code></li>
+</ul>
+<p><img src="https://i.loli.net/2020/09/11/MGQSZ4hI9LEczHb.png" alt="image.png"></p>
+<p>完成后，全部确定，关闭环境变量设置窗口，按win+r键打开运行，输入cmd回车后，可在控制台下输入gcc -v查看当前计算机mingw是否安装成功</p>
+<p><img src="https://i.loli.net/2020/09/11/Xl6W8pBMTcqJoay.png" alt="image.png"></p>
+<h1 id="4-修改vscode调试配置文件"><a href="#4-修改vscode调试配置文件" class="headerlink" title="4.修改vscode调试配置文件"></a>4.修改vscode调试配置文件</h1><p>重启vscode，安装两个扩展：</p>
+<ul>
+<li>C&#x2F;C++<br><img src="https://i.loli.net/2020/09/11/ElgD2YS7a1uqAx5.png" alt="image.png"></li>
+<li>Code Runner<br><img src="https://i.loli.net/2020/09/11/wlRa6ZmkeUx7YHz.png" alt="image.png"><br>配置Code Runner，勾选这两个：<br><img src="https://i.loli.net/2020/09/11/KT4fIOxpQN7J5bz.png" alt="image.png"></li>
+</ul>
+<p>写一个hello world!程序，并点击右上角箭头，看是否成功运行，vscode下方终端是否有程序运行结果</p>
+<p><img src="https://i.loli.net/2020/09/11/alOMEf3dtzjSFPY.png" alt="image.png"></p>
+<p><img src="https://i.loli.net/2020/09/11/W1LpMIteQKcJdzE.png" alt="image.png"></p>
+<p>接下来配置C&#x2F;C++ debuger</p>
+<p>在之前新建的文件夹下再新建一个名为.vscode的文件夹，新建一个launch.json文件，输入：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;version&quot;: &quot;0.2.0&quot;,  </span><br><span class="line">    &quot;configurations&quot;: [  </span><br><span class="line">        &#123;  </span><br><span class="line">            &quot;name&quot;: &quot;(gdb) Launch&quot;, // 配置名称，将会在启动配置的下拉菜单中显示</span><br><span class="line">            &quot;type&quot;: &quot;cppdbg&quot;,       // 配置类型，这里只能为cppdbg</span><br><span class="line">            &quot;request&quot;: &quot;launch&quot;,    // 请求配置类型，可以为launch（启动）或attach（附加）  </span><br><span class="line">            &quot;program&quot;: &quot;$&#123;workspaceFolder&#125;/$&#123;fileBasenameNoExtension&#125;.exe&quot;,// 将要进行调试的程序的路径  </span><br><span class="line">            &quot;args&quot;: [],             // 程序调试时传递给程序的命令行参数，一般设为空即可  </span><br><span class="line">            &quot;stopAtEntry&quot;: false,   // 设为true时程序将暂停在程序入口处，一般设置为false  </span><br><span class="line">            &quot;cwd&quot;: &quot;$&#123;workspaceFolder&#125;&quot;, // 调试程序时的工作目录，一般为$&#123;workspaceFolder&#125;即代码所在目录  </span><br><span class="line">            &quot;environment&quot;: [],  </span><br><span class="line">            &quot;externalConsole&quot;: true, // 调试时是否显示控制台窗口，一般设置为true显示控制台  </span><br><span class="line">            &quot;MIMode&quot;: &quot;gdb&quot;,  </span><br><span class="line">            &quot;miDebuggerPath&quot;: &quot;C:\\Program Files (x86)\\MinGW\\bin\\gdb.exe&quot;, // miDebugger的路径，注意这里要与MinGw的路径对应  </span><br><span class="line">            &quot;preLaunchTask&quot;: &quot;gcc&quot;, // 调试会话开始前执行的任务，一般为编译程序，c++为g++, c为gcc  </span><br><span class="line">            &quot;setupCommands&quot;: [  </span><br><span class="line">                &#123;   </span><br><span class="line">            &quot;description&quot;: &quot;Enable pretty-printing for gdb&quot;,  </span><br><span class="line">                    &quot;text&quot;: &quot;-enable-pretty-printing&quot;,  </span><br><span class="line">                    &quot;ignoreFailures&quot;: true  </span><br><span class="line">                &#125;  </span><br><span class="line">            ]  </span><br><span class="line">        &#125;  </span><br><span class="line">    ]  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意这里”miDebuggerPath”: “D:\Install\bin\gdb.exe”将其值改成自己所解压的mingw\bin\gdb.exe的路径</p>
+<p>其他设置可看情况修改</p>
+<p>再新建tasks.json文件，输入：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;version&quot;: &quot;2.0.0&quot;,</span><br><span class="line">    &quot;command&quot;: &quot;gcc&quot;,</span><br><span class="line">    &quot;args&quot;: [&quot;-g&quot;,&quot;$&#123;file&#125;&quot;,&quot;-o&quot;,&quot;$&#123;fileBasenameNoExtension&#125;.exe&quot;],    // 编译命令参数</span><br><span class="line">    &quot;problemMatcher&quot;: &#123;</span><br><span class="line">        &quot;owner&quot;: &quot;cpp&quot;,</span><br><span class="line">        &quot;fileLocation&quot;: [&quot;relative&quot;, &quot;$&#123;workspaceFolder&#125;&quot;],</span><br><span class="line">        &quot;pattern&quot;: &#123;</span><br><span class="line">            &quot;regexp&quot;: &quot;^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$&quot;,</span><br><span class="line">            &quot;file&quot;: 1,</span><br><span class="line">            &quot;line&quot;: 2,</span><br><span class="line">            &quot;column&quot;: 3,</span><br><span class="line">            &quot;severity&quot;: 4,</span><br><span class="line">            &quot;message&quot;: 5</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意这里的”command”: “gcc”要与launch.json中的”preLaunchTask”: “gcc”对应，即都为gcc或都为g++</p>
+<p>保存后，回到最初的C代码文件，菜单-调试-启动调试(快捷键F5)，即可成功运行C程序！</p>
+<p><img src="https://i.loli.net/2020/09/11/8aqw534hpHvzV2c.png" alt="image.png"></p>
+<h1 id="5-vscode下开发C项目的使用细节"><a href="#5-vscode下开发C项目的使用细节" class="headerlink" title="5.vscode下开发C项目的使用细节"></a>5.vscode下开发C项目的使用细节</h1><p>对于通常情况下，可将上述完成的.vscode文件夹放在C代码保存的大目录下，该目录下的所有C文件在vscode下调试都将适用该配置文件夹。</p>
+<p>注意，在不含上述.vscode文件夹的C程序都无法直接调试！需要重新配置。(或者将配置好的.vscode文件夹复制到该程序所在目录下)</p>
+<p>正在编辑过程中，要充分利用vscode的资源管理器，菜单-文件-打开文件夹&#x2F;打开工作区的方式打开一个含.vscode文件夹的目录，可进行调试。</p>
+<p>对于不需要调试的C程序，可利用预装好code runner(装好后窗口右上角会多出一排按钮)直接点击编译运行，在下方终端中可进行数据的输入与输出。</p>
+<p>注意在调试方法下运行C程序，需在return前下断点或中断函数等方法使程序到执行出口前停下，否则可能会出现预料之内的闪退。</p>
+<h1 id="6-通用的C语言debug方法"><a href="#6-通用的C语言debug方法" class="headerlink" title="6.通用的C语言debug方法"></a>6.通用的C语言debug方法</h1><p>vscode下的调试工具非常方便，对于需要调试的代码，可在对应行的行数前鼠标左键单击，即可下断点，右键断点，可对断点进行简单管理，如禁用或修改为逻辑断点</p>
+<p><img src="https://i.loli.net/2020/09/11/TPeYJjgiVcwfWMm.png" alt="image.png"></p>
+<p>常用快捷键下的调试：</p>
+<ul>
+<li>F5进入调试</li>
+<li>F10单步跳过</li>
+<li>F11单步执行(可进入执行函数体)</li>
+<li>Shift+F5停止调试</li>
+<li>Ctrl+Shift+F5重启调试</li>
+</ul>
+<p>对于调试异常终止，若不能正常重新启动调试的，重启vscode试试</p>
+<p>若上述操作存在无响应的，试试万能的以管理员方式启动大法。</p>
+<h1 id="7-常见问题与解决方案-不定时更新"><a href="#7-常见问题与解决方案-不定时更新" class="headerlink" title="7.常见问题与解决方案(不定时更新)"></a>7.常见问题与解决方案(不定时更新)</h1><p>对于程序中含中文调试程序显示乱码的：右下角-UTF8-通过编码保存-输入gb2312回车</p>
+<p>对于打开程序发现原本应该是中文的乱码的：右下角-UTF8-通过编码重新打开-输入gb2312回车s</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Visual-Studio-Code/" rel="tag"># Visual Studio Code</a>
+              <a href="/tags/C/" rel="tag"># C</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/08/26/%E5%BC%80%E6%9C%BA%E5%BC%B9%E5%87%BAhttpwww-msftconnect/" rel="prev" title="开机弹出www.msftconnecttest.com">
+                  <i class="fa fa-chevron-left"></i> 开机弹出www.msftconnecttest.com
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/11/09/mysql%E7%9A%84%E6%95%B0%E6%8D%AE%E4%BB%8Ewindows%E8%BF%81%E7%A7%BB%E5%88%B0linuxmysql%20%E4%B8%8A/" rel="next" title="MySQL的数据从Windows迁移到Linux上">
+                  MySQL的数据从Windows迁移到Linux上 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jacen Chou</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
